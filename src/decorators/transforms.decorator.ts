@@ -1,7 +1,7 @@
 /* tslint:disable:naming-convention */
 
 import { Transform } from 'class-transformer';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 /**
  * @description trim spaces from start and end, replace multiple spaces with one.
@@ -10,13 +10,12 @@ import * as _ from 'lodash';
  * @IsString()
  * @Trim()
  * name: string;
- * @returns {(target: any, key: string) => void}
  * @constructor
  */
-export function Trim() {
+export function Trim(): (target: any, key: string) => void {
     return Transform((value: string | string[]) => {
         if (_.isArray(value)) {
-            return value.map(v => _.trim(v).replace(/\s\s+/g, ' '));
+            return (<string[]>value).map(v => _.trim(v).replace(/\s\s+/g, ' '));
         }
         return _.trim(value).replace(/\s\s+/g, ' ');
     });
@@ -28,10 +27,9 @@ export function Trim() {
  * @IsNumber()
  * @ToInt()
  * name: number;
- * @returns {(target: any, key: string) => void}
  * @constructor
  */
-export function ToInt() {
+export function ToInt(): (target: any, key: string) => void {
     return Transform(value => parseInt(value, 10), { toClassOnly: true });
 }
 
