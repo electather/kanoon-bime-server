@@ -3,7 +3,9 @@
         "Injectable",
         "microservices",
         "nestjs",
-        "postgres"
+        "postgres",
+        "typeorm"
     ],
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "files.eol": "\n"
 }

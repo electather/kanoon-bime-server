@@ -6,7 +6,7 @@ import {
     NestExpressApplication,
 } from '@nestjs/platform-express';
 import * as compression from 'compression';
-import * as RateLimit from 'express-rate-limit';
+import * as rateLimit from 'express-rate-limit';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import {
@@ -27,18 +27,18 @@ async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(
         AppModule,
         new ExpressAdapter(),
-        { cors: true },
+        { cors: true, logger: false },
     );
     app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     app.use(helmet());
     app.use(
-        new RateLimit({
+        rateLimit({
             windowMs: 15 * 60 * 1000, // 15 minutes
             max: 100, // limit each IP to 100 requests per windowMs
         }),
     );
     app.use(compression());
-    app.use(morgan('combined'));
+    app.use(morgan('tiny'));
 
     const reflector = app.get(Reflector);
 
@@ -57,6 +57,7 @@ async function bootstrap() {
             validationError: {
                 target: false,
             },
+            forbidUnknownValues: true,
         }),
     );
 

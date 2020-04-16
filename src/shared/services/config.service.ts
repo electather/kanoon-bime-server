@@ -15,8 +15,6 @@ export class ConfigService {
         for (const envName of Object.keys(process.env)) {
             process.env[envName] = process.env[envName].replace(/\\n/g, '\n');
         }
-
-        console.info(process.env);
     }
 
     public get(key: string): string {
@@ -41,7 +39,7 @@ export class ConfigService {
                 true,
                 /\.entity\.ts$/,
             );
-            entities = entityContext.keys().map(id => {
+            entities = entityContext.keys().map((id: string) => {
                 const entityModule = entityContext(id);
                 const [entity] = Object.values(entityModule);
                 return entity;
@@ -51,7 +49,7 @@ export class ConfigService {
                 false,
                 /\.ts$/,
             );
-            migrations = migrationContext.keys().map(id => {
+            migrations = migrationContext.keys().map((id: string) => {
                 const migrationModule = migrationContext(id);
                 const [migration] = Object.values(migrationModule);
                 return migration;
