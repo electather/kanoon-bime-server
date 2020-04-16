@@ -1,10 +1,11 @@
 {
     "cSpell.words": [
-        "Injectable",
-        "microservices",
-        "nestjs",
-        "postgres",
-        "typeorm"
+      "Dtos",
+      "Injectable",
+      "microservices",
+      "nestjs",
+      "postgres",
+      "typeorm"
     ],
     "editor.detectIndentation": false,
     "files.eol": "\n"
