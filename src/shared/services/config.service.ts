@@ -1,5 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
+import { homedir } from 'os';
+import { join } from 'path';
 
 import { IAwsConfig } from '../../interfaces/IAwsConfig';
 import { SnakeNamingStrategy } from '../../snake-naming.strategy';
@@ -15,6 +17,10 @@ export class ConfigService {
         for (const envName of Object.keys(process.env)) {
             process.env[envName] = process.env[envName].replace(/\\n/g, '\n');
         }
+    }
+
+    get getHomeDir(): string {
+        return join(homedir(), this.get('APP_NAME'));
     }
 
     public get(key: string): string {
