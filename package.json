@@ -1,8 +1,8 @@
 {
-  "name": "awesome-nest-boilerplate",
+  "name": "personal-nest-boilerplate",
   "version": "0.0.1",
-  "description": "Awesome NestJS Boilerplate, Typescript, Postgres, TypeORM",
-  "author": "Narek Hakobyan <narek.hakobyan.07@gmail.com>",
+  "description": "Personal NestJS Boilerplate, Typescript, Postgres, TypeORM",
+  "author": "Omid Astaraki <omid.astaraki@protonmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
