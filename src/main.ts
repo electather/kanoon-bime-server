@@ -22,7 +22,6 @@ import { SharedModule } from './shared/shared.module';
 import { setupSwagger } from './viveo-swagger';
 
 async function bootstrap() {
-  console.info('hi');
   initializeTransactionalContext();
   patchTypeORMRepositoryWithBaseRepository();
   const app = await NestFactory.create<NestExpressApplication>(
@@ -83,6 +82,10 @@ async function bootstrap() {
   await app.listen(port);
 
   console.info(`server running on port ${port}`);
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 
 bootstrap();
