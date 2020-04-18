@@ -13,14 +13,12 @@ import _ from 'lodash';
  * @constructor
  */
 export function Trim(): (target: any, key: string) => void {
-    return Transform((value: string | string[]) => {
-        if (_.isArray(value)) {
-            return (<string[]>value).map((v) =>
-                _.trim(v).replace(/\s\s+/g, ' '),
-            );
-        }
-        return _.trim(value).replace(/\s\s+/g, ' ');
-    });
+  return Transform((value: string | string[]) => {
+    if (_.isArray(value)) {
+      return (<string[]>value).map((v) => _.trim(v).replace(/\s\s+/g, ' '));
+    }
+    return _.trim(value).replace(/\s\s+/g, ' ');
+  });
 }
 
 /**
@@ -32,7 +30,7 @@ export function Trim(): (target: any, key: string) => void {
  * @constructor
  */
 export function ToInt(): (target: any, key: string) => void {
-    return Transform((value) => parseInt(value, 10), { toClassOnly: true });
+  return Transform((value) => parseInt(value, 10), { toClassOnly: true });
 }
 
 /**
@@ -44,13 +42,13 @@ export function ToInt(): (target: any, key: string) => void {
  * @constructor
  */
 export function ToArray(): (target: any, key: string) => void {
-    return Transform(
-        (value) => {
-            if (_.isNil(value)) {
-                return [];
-            }
-            return _.castArray(value);
-        },
-        { toClassOnly: true },
-    );
+  return Transform(
+    (value) => {
+      if (_.isNil(value)) {
+        return [];
+      }
+      return _.castArray(value);
+    },
+    { toClassOnly: true },
+  );
 }

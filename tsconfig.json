@@ -14,11 +14,11 @@
     "allowJs": true,
     "outDir": "./dist",
     "baseUrl": "./src",
-    "alwaysStrict" : true,
-    "incremental" : true,
-    "noFallthroughCasesInSwitch" : true,
-    "strictNullChecks" : true
+    "alwaysStrict": true,
+    "incremental": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*", "*.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

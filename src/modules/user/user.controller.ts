@@ -1,14 +1,14 @@
 'use strict';
 
 import {
-    Controller,
-    Get,
-    HttpCode,
-    HttpStatus,
-    Query,
-    UseGuards,
-    UseInterceptors,
-    ValidationPipe,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -29,27 +29,27 @@ import { UserService } from './user.service';
 @UseInterceptors(AuthUserInterceptor)
 @ApiBearerAuth()
 export class UserController {
-    constructor(private _userService: UserService) {}
+  constructor(private _userService: UserService) {}
 
-    @Get('admin')
-    @Roles(RoleType.USER)
-    @HttpCode(HttpStatus.OK)
-    async admin(@AuthUser() user: UserEntity) {
-        return 'only for you admin: ' + user.firstName;
-    }
+  @Get('admin')
+  @Roles(RoleType.USER)
+  @HttpCode(HttpStatus.OK)
+  async admin(@AuthUser() user: UserEntity) {
+    return 'only for you admin: ' + user.firstName;
+  }
 
-    @Get('users')
-    @Roles(RoleType.ADMIN)
-    @HttpCode(HttpStatus.OK)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Get users list',
-        type: UsersPageDto,
-    })
-    getUsers(
-        @Query(new ValidationPipe({ transform: true }))
-        pageOptionsDto: UsersPageOptionsDto,
-    ): Promise<UsersPageDto> {
-        return this._userService.getUsers(pageOptionsDto);
-    }
+  @Get('users')
+  @Roles(RoleType.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get users list',
+    type: UsersPageDto,
+  })
+  getUsers(
+    @Query(new ValidationPipe({ transform: true }))
+    pageOptionsDto: UsersPageOptionsDto,
+  ): Promise<UsersPageDto> {
+    return this._userService.getUsers(pageOptionsDto);
+  }
 }
