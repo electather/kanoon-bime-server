@@ -6,7 +6,7 @@
     "removeComments": true,
     "noLib": false,
     "lib": ["es2020"],
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "ES2019",

@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { AbstractEntity } from './common/abstract.entity';
 import { AbstractDto } from './common/dto/AbstractDto';

@@ -1,7 +1,7 @@
 /* tslint:disable:naming-convention */
 
 import { Transform } from 'class-transformer';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 /**
  * @description trim spaces from start and end, replace multiple spaces with one.
