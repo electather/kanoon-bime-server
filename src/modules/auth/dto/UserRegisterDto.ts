@@ -1,6 +1,6 @@
 'use strict';
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
@@ -10,12 +10,16 @@ import {
   MinLength,
 } from 'class-validator';
 
+import { Trim } from '../../../decorators/transforms.decorator';
+
 export class UserRegisterDto {
+  @Trim()
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   readonly firstName: string;
 
+  @Trim()
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
@@ -32,11 +36,8 @@ export class UserRegisterDto {
   @ApiProperty({ minLength: 6 })
   readonly password: string;
 
-  @IsPhoneNumber('ZZ')
+  @IsPhoneNumber('IR')
   @IsOptional()
-  @ApiProperty()
-  phone: string;
-
-  @ApiProperty({ type: 'string', format: 'binary' })
-  file: any;
+  @ApiPropertyOptional()
+  readonly phone: string;
 }

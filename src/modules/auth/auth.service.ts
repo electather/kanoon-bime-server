@@ -16,20 +16,20 @@ export class AuthService {
   private static _authUserKey = 'user_key';
 
   constructor(
-    public readonly jwtService: JwtService,
-    public readonly configService: ConfigService,
-    public readonly userService: UserService,
+    private readonly _jwtService: JwtService,
+    private readonly _configService: ConfigService,
+    private readonly _userService: UserService,
   ) {}
 
   async createToken(user: UserEntity | UserDto): Promise<TokenPayloadDto> {
     return new TokenPayloadDto({
-      expiresIn: this.configService.getNumber('JWT_EXPIRATION_TIME'),
-      accessToken: await this.jwtService.signAsync({ id: user.id }),
+      expiresIn: this._configService.getNumber('JWT_EXPIRATION_TIME'),
+      accessToken: await this._jwtService.signAsync({ id: user.id }),
     });
   }
 
   async validateUser(userLoginDto: UserLoginDto): Promise<UserEntity> {
-    const user = await this.userService.findOne({
+    const user = await this._userService.findOne({
       email: userLoginDto.email,
     });
     const isPasswordValid = await UtilsService.validateHash(
@@ -42,7 +42,7 @@ export class AuthService {
     return user;
   }
 
-  static setAuthUser(user: UserEntity) {
+  static setAuthUser(user: UserEntity): void {
     ContextService.set(AuthService._authUserKey, user);
   }
 

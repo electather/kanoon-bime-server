@@ -5,12 +5,12 @@ import { UserDto } from './UserDto';
 
 export class UsersPageDto {
   @ApiProperty({
-    type: UserDto,
+    type: () => UserDto,
     isArray: true,
   })
   readonly data: UserDto[];
 
-  @ApiProperty()
+  @ApiProperty({ type: () => PageMetaDto })
   readonly meta: PageMetaDto;
 
   constructor(data: UserDto[], meta: PageMetaDto) {

@@ -6,9 +6,9 @@ import { UserDto } from '../../user/dto/UserDto';
 import { TokenPayloadDto } from './TokenPayloadDto';
 
 export class LoginPayloadDto {
-  @ApiProperty({ type: UserDto })
+  @ApiProperty({ type: () => UserDto })
   user: UserDto;
-  @ApiProperty({ type: TokenPayloadDto })
+  @ApiProperty({ type: () => TokenPayloadDto })
   token: TokenPayloadDto;
 
   constructor(user: UserDto, token: TokenPayloadDto) {

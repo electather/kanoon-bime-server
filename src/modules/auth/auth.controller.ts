@@ -8,11 +8,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
-  ApiConsumes,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -32,8 +30,8 @@ import { UserRegisterDto } from './dto/UserRegisterDto';
 @ApiTags('auth')
 export class AuthController {
   constructor(
-    public readonly userService: UserService,
-    public readonly authService: AuthService,
+    private readonly _userService: UserService,
+    private readonly _authService: AuthService,
   ) {}
 
   @Post('login')
@@ -45,17 +43,15 @@ export class AuthController {
   async userLogin(
     @Body() userLoginDto: UserLoginDto,
   ): Promise<LoginPayloadDto> {
-    const userEntity = await this.authService.validateUser(userLoginDto);
+    const userEntity = await this._authService.validateUser(userLoginDto);
 
-    const token = await this.authService.createToken(userEntity);
+    const token = await this._authService.createToken(userEntity);
     return new LoginPayloadDto(userEntity.toDto(), token);
   }
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: UserDto, description: 'Successfully Registered' })
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('avatar'))
   @ApiBody({
     description: 'user registration data',
     type: UserRegisterDto,
@@ -64,7 +60,7 @@ export class AuthController {
     @Body() userRegisterDto: UserRegisterDto,
     // @UploadedFile() file: IFile,
   ): Promise<UserDto> {
-    const createdUser = await this.userService.createUser(userRegisterDto);
+    const createdUser = await this._userService.createUser(userRegisterDto);
 
     return createdUser.toDto();
   }
