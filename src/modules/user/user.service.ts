@@ -8,8 +8,6 @@ import {
 } from 'typeorm-transactional-cls-hooked';
 
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
-import { AwsS3Service } from '../../shared/services/aws-s3.service';
-import { ValidatorService } from '../../shared/services/validator.service';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
 import { UsersPageDto } from './dto/UsersPageDto';
 import { UsersPageOptionsDto } from './dto/UsersPageOptionsDto';
@@ -18,11 +16,7 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(
-    public readonly userRepository: UserRepository,
-    public readonly validatorService: ValidatorService,
-    public readonly awsS3Service: AwsS3Service,
-  ) {}
+  constructor(private readonly _userRepository: UserRepository) {}
 
   /**
    * Find single user
@@ -30,12 +24,12 @@ export class UserService {
   findOne(
     findData: FindConditions<UserEntity>,
   ): Promise<UserEntity | undefined> {
-    return this.userRepository.findOne(findData);
+    return this._userRepository.findOne(findData);
   }
   async findByUsernameOrEmail(
     options: Partial<{ username: string; email: string }>,
   ): Promise<UserEntity | undefined> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    const queryBuilder = this._userRepository.createQueryBuilder('user');
 
     if (options.email) {
       queryBuilder.orWhere('user.email = :email', {
@@ -53,26 +47,17 @@ export class UserService {
 
   @Transactional()
   async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
-    // let avatar: string;
-    // if (file && !this.validatorService.isImage(file.mimetype)) {
-    //   throw new FileNotImageException();
-    // }
-
-    // if (file) {
-    //   avatar = await this.awsS3Service.uploadImage(file);
-    // }
-
-    const user = this.userRepository.create({ ...userRegisterDto });
+    const user = this._userRepository.create({ ...userRegisterDto });
     runOnTransactionCommit(() => console.info('user created'));
     runOnTransactionRollback((e) => console.info('user not created', e));
     runOnTransactionComplete(() =>
       console.info('transaction completed for user!'),
     );
-    return this.userRepository.save(user);
+    return this._userRepository.save(user);
   }
 
   async getUsers(pageOptionsDto: UsersPageOptionsDto): Promise<UsersPageDto> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    const queryBuilder = this._userRepository.createQueryBuilder('user');
     const [users, usersCount] = await queryBuilder
       .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take)
