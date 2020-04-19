@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { FindConditions } from 'typeorm';
+import {
+  runOnTransactionCommit,
+  runOnTransactionComplete,
+  runOnTransactionRollback,
+  Transactional,
+} from 'typeorm-transactional-cls-hooked';
 
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { AwsS3Service } from '../../shared/services/aws-s3.service';
@@ -45,6 +51,7 @@ export class UserService {
     return queryBuilder.getOne();
   }
 
+  @Transactional()
   async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
     // let avatar: string;
     // if (file && !this.validatorService.isImage(file.mimetype)) {
@@ -56,7 +63,11 @@ export class UserService {
     // }
 
     const user = this.userRepository.create({ ...userRegisterDto });
-
+    runOnTransactionCommit(() => console.info('user created'));
+    runOnTransactionRollback((e) => console.info('user not created', e));
+    runOnTransactionComplete(() =>
+      console.info('transaction completed for user!'),
+    );
     return this.userRepository.save(user);
   }
 
