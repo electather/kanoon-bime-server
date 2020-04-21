@@ -16,14 +16,17 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
   role: RoleType;
 
-  @Column({ unique: true, nullable: true })
-  email: string;
+  @Column({ unique: true, type: 'varchar', length: 10, nullable: false })
+  phone: string;
+
+  @Column({ unique: true, type: 'varchar', length: 10, nullable: false })
+  melliCode: string;
+
+  @Column({ nullable: true })
+  address: string;
 
   @Column({ nullable: true, transformer: new PasswordTransformer() })
   password: string;
-
-  @Column({ nullable: true })
-  phone: string;
 
   @Column({ nullable: true })
   avatar: string;
