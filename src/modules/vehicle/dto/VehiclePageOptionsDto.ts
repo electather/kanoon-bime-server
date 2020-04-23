@@ -1,13 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 import { PageOptionsDto } from '../../../common/dto/PageOptionsDto';
-import { IsMelliCode } from '../../../decorators/validators.decorator';
 
-export class UsersPageOptionsDto extends PageOptionsDto {
+export class VehiclesPageOptionsDto extends PageOptionsDto {
   @ApiPropertyOptional()
   @IsString()
-  @IsMelliCode()
+  @Length(10, 10)
   @IsOptional()
   readonly melliCode?: string;
 }

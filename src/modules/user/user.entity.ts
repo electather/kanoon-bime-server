@@ -1,7 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../common/abstract.entity';
 import { RoleType } from '../../common/constants/role-type';
+import { VehicleEntity } from '../vehicle/vehicle.entity';
 import { UserDto } from './dto/UserDto';
 import { PasswordTransformer } from './password.transformer';
 
@@ -30,6 +31,9 @@ export class UserEntity extends AbstractEntity<UserDto> {
 
   @Column({ nullable: true })
   avatar: string;
+
+  @OneToMany(() => VehicleEntity, (item) => item.issuer)
+  vehicles: VehicleEntity[];
 
   dtoClass = UserDto;
 }
