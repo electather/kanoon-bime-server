@@ -1,13 +1,15 @@
 'use strict';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
+
+import { IsCellNumber } from '../../../decorators/validators.decorator';
 
 export class UserLoginDto {
   @IsString()
-  @IsEmail()
   @ApiProperty()
-  readonly email: string;
+  @IsCellNumber()
+  readonly phone: string;
 
   @IsString()
   @ApiProperty()

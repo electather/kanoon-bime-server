@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import * as mime from 'mime-types';
 
+import { BucketTypes } from '../../common/constants/bucket-type';
 import { IFile } from '../../interfaces/IFile';
 import { ConfigService } from './config.service';
 import { GeneratorService } from './generator.service';
@@ -15,8 +16,7 @@ export class AwsS3Service {
     public generatorService: GeneratorService,
   ) {
     const options: AWS.S3.Types.ClientConfiguration = {
-      apiVersion: '2010-12-01',
-      region: 'eu-central-1',
+      endpoint: 'https://s3.ir-thr-at1.arvanstorage.com',
     };
 
     const awsS3Config = configService.awsS3Config;
@@ -27,11 +27,11 @@ export class AwsS3Service {
     this._s3 = new AWS.S3(options);
   }
 
-  async uploadImage(file: IFile) {
+  async uploadImage(file: IFile, bucket: BucketTypes) {
     const fileName = this.generatorService.fileName(
       <string>mime.extension(file.mimetype),
     );
-    const key = 'images/' + fileName;
+    const key = bucket + fileName;
     await this._s3
       .putObject({
         Bucket: this.configService.awsS3Config.bucketName,

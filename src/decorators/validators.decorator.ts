@@ -37,43 +37,41 @@ export function IsMelliCode(
       options: validationOptions,
       validator: {
         validate(value: string, _args: ValidationArguments) {
-          if (value.length === 10) {
-            if (
-              value === '1111111111' ||
-              value === '0000000000' ||
-              value === '2222222222' ||
-              value === '3333333333' ||
-              value === '4444444444' ||
-              value === '5555555555' ||
-              value === '6666666666' ||
-              value === '7777777777' ||
-              value === '8888888888' ||
-              value === '9999999999'
-            ) {
-              return false;
-            }
-            const c = parseInt(value.charAt(9), 10);
-            const n =
-              parseInt(value.charAt(0), 10) * 10 +
-              parseInt(value.charAt(1), 10) * 9 +
-              parseInt(value.charAt(2), 10) * 8 +
-              parseInt(value.charAt(3), 10) * 7 +
-              parseInt(value.charAt(4), 10) * 6 +
-              parseInt(value.charAt(5), 10) * 5 +
-              parseInt(value.charAt(6), 10) * 4 +
-              parseInt(value.charAt(7), 10) * 3 +
-              parseInt(value.charAt(8), 10) * 2;
-            const r = n - (n / 11) * 11;
-            if (
-              (r === 0 && r === c) ||
-              (r === 1 && c === 1) ||
-              (r > 1 && c === 11 - r)
-            ) {
-              return true;
-            }
+          if (value.length !== 10 || /(\d)(\1){9}/.test(value)) {
             return false;
           }
-          return false;
+
+          let sum = 0;
+          const chars = value.split('');
+
+          for (let i = 0; i < 9; i++) {
+            sum += +chars[i] * (10 - i);
+          }
+
+          const remainder = sum % 11;
+
+          const lastDigit = remainder < 2 ? remainder : 11 - remainder;
+
+          return +chars[9] === lastDigit;
+        },
+      },
+    });
+  };
+}
+
+export function IsCellNumber(
+  validationOptions?: ValidationOptions,
+): PropertyDecorator {
+  return (object: any, propertyName: string) => {
+    registerDecorator({
+      propertyName,
+      name: 'isMelliCode',
+      target: object.constructor,
+      constraints: [],
+      options: validationOptions,
+      validator: {
+        validate(value: string, _args: ValidationArguments) {
+          return /^9[0|1|2|3][0-9]{8}$/.test(value);
         },
       },
     });

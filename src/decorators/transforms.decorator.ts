@@ -52,3 +52,27 @@ export function ToArray(): (target: any, key: string) => void {
     { toClassOnly: true },
   );
 }
+
+/**
+ * @description transforms persian and arabic digits to english
+ * @example
+ * @ToEnglishDigits()
+ * phoneNumber: string;
+ * @constructor
+ */
+export function ToEnglishDigits(): (target: any, key: string) => void {
+  return Transform(
+    (value) => {
+      let res: string;
+      // convert persian digits [۰۱۲۳۴۵۶۷۸۹]
+      let e = '۰'.charCodeAt(0);
+      res = value.replace(/[۰-۹]/g, (t: string) => t.charCodeAt(0) - e);
+
+      // convert arabic indic digits [٠١٢٣٤٥٦٧٨٩]
+      e = '٠'.charCodeAt(0);
+      res = value.replace(/[٠-٩]/g, (t: string) => t.charCodeAt(0) - e);
+      return res;
+    },
+    { toClassOnly: true },
+  );
+}
