@@ -4,6 +4,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 import { RoleType } from '../../../common/constants/role-type';
 import { AbstractDto } from '../../../common/dto/AbstractDto';
+import { FileDto } from '../../files/dto/FileDto';
 import { UserEntity } from '../user.entity';
 
 export class UserDto extends AbstractDto {
@@ -26,7 +27,8 @@ export class UserDto extends AbstractDto {
   address: string;
 
   @ApiPropertyOptional()
-  avatar: string;
+  avatar: FileDto;
+
   constructor(user: UserEntity) {
     super(user);
     this.firstName = user.firstName;
@@ -34,6 +36,6 @@ export class UserDto extends AbstractDto {
     this.role = user.role;
     this.phone = user.phone;
     this.melliCode = user.melliCode;
-    this.avatar = user.avatar;
+    this.avatar = user.avatar?.toDto();
   }
 }

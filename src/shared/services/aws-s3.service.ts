@@ -27,11 +27,11 @@ export class AwsS3Service {
     this._s3 = new AWS.S3(options);
   }
 
-  async uploadImage(file: IFile, bucket: BucketTypes) {
+  async uploadImage(file: IFile, bucket: BucketTypes): Promise<string> {
     const fileName = this.generatorService.fileName(
       <string>mime.extension(file.mimetype),
     );
-    const key = bucket + fileName;
+    const key = bucket + '/' + fileName;
     await this._s3
       .putObject({
         Bucket: this.configService.awsS3Config.bucketName,
@@ -40,7 +40,10 @@ export class AwsS3Service {
         Key: key,
       })
       .promise();
-
     return key;
+  }
+
+  static getImageURL(key: string): string {
+    return `https://kanoon.s3.ir-thr-at1.arvanstorage.com/${key}`;
   }
 }

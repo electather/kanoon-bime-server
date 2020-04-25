@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Equal, FindConditions, Like } from 'typeorm';
+import { identity, pickBy } from 'lodash';
+import { DeepPartial, Equal, FindConditions, Like } from 'typeorm';
 
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
+import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
+import { UserDto } from './dto/UserDto';
 import { UsersPageDto } from './dto/UsersPageDto';
 import { UsersPageOptionsDto } from './dto/UsersPageOptionsDto';
+import { UserUpdateDto } from './dto/UsersUpdateDto';
 import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -22,7 +26,15 @@ export class UserService {
   }
 
   async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
-    const user = this._userRepository.create({ ...userRegisterDto });
+    const create: DeepPartial<UserEntity> = {
+      ...userRegisterDto,
+    };
+    if (userRegisterDto.avatarId) {
+      create.avatar = { id: userRegisterDto.avatarId };
+      delete (<any>create).avatarId;
+    }
+
+    const user = this._userRepository.create(create);
     return this._userRepository.save(user);
   }
 
@@ -47,5 +59,22 @@ export class UserService {
       itemCount: usersCount,
     });
     return new UsersPageDto(users.toDtos(), pageMetaDto);
+  }
+
+  async updateUser(id: string, userUpdateDto: UserUpdateDto): Promise<UserDto> {
+    const found = await this.findOne({ id });
+    if (!found) {
+      throw new UserNotFoundException();
+    }
+
+    const update: DeepPartial<UserEntity> = {
+      ...userUpdateDto,
+    };
+    if (userUpdateDto.avatarId) {
+      update.avatar = { id: userUpdateDto.avatarId };
+      delete (<any>update).avatarId;
+    }
+    await this._userRepository.update(id, pickBy(update, identity));
+    return found.toDto();
   }
 }

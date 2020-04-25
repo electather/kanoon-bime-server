@@ -5537,6 +5537,11 @@ gh-pages@^2.1.1:
     fs-extra "^8.1.0"
     globby "^6.1.0"
 
+ghasedak@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/ghasedak/-/ghasedak-0.0.2.tgz#96995e996f23139b648cec0f58d939459f16e17d"
+  integrity sha512-rZIRrdgW2XESmBHeemIyuY3CDAvBIZo0dtlIsvrQ9mWMUi2+Ajyhz6B+oJwP8R268+3K3Ng56/dwyPt01Ev8YA==
+
 glob-parent@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-3.1.0.tgz#9e6af6299d8d3bd2bd40430832bd113df906c5ae"

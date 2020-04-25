@@ -8,7 +8,6 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -20,7 +19,6 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Response } from 'express';
 
 import { RoleType } from '../../common/constants/role-type';
 import { Roles } from '../../decorators/roles.decorator';
@@ -44,9 +42,8 @@ export class FileController {
   })
   async getFile(
     @Param('fileId', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Res() res: Response,
   ): Promise<void> {
-    res.sendFile((await this._fileService.getFile(id)).file);
+    return (await this._fileService.getFile(id)).toDto();
   }
 
   @Post()

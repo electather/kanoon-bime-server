@@ -6,13 +6,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { FileEntity } from '../file.entity';
 import { AbstractDto } from '../../../common/dto/AbstractDto';
 import { UserDto } from '../../user/dto/UserDto';
+import { AwsS3Service } from '../../../shared/services/aws-s3.service';
 
 export class FileDto extends AbstractDto {
   @ApiProperty()
   description: string;
 
   @ApiProperty()
-  file: string;
+  url: string;
 
   @ApiProperty({ type: () => UserDto })
   creator: UserDto;
@@ -21,6 +22,6 @@ export class FileDto extends AbstractDto {
     super(item);
     this.description = item.description;
     this.creator = item.creator?.toDto();
-    this.file = item.file;
+    this.url = AwsS3Service.getImageURL(item.file);
   }
 }

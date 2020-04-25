@@ -1,6 +1,6 @@
 'use strict';
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsOptional,
@@ -18,34 +18,39 @@ import {
   IsMelliCode,
 } from '../../../decorators/validators.decorator';
 
-export class UserRegisterDto {
+export class UserUpdateDto {
   @Trim()
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   readonly firstName: string;
 
   @Trim()
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   readonly lastName: string;
 
   @IsString()
   @ToEnglishDigits()
   @IsMelliCode({ message: 'not a valid melliCode' })
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   readonly melliCode: string;
 
   @IsString()
   @MinLength(6)
-  @ApiProperty({ minLength: 6 })
+  @IsOptional()
+  @ApiPropertyOptional({ minLength: 6 })
   readonly password: string;
 
   @IsCellNumber({ message: 'invalid phone number' })
   @IsString()
   @ToEnglishDigits()
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   readonly phone: string;
 
   @IsUUID('4')
