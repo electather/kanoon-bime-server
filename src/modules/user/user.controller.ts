@@ -32,7 +32,7 @@ export class UserController {
   constructor(private _userService: UserService) {}
 
   @Get('admin')
-  @Roles(RoleType.USER)
+  @Roles(RoleType.ADMIN)
   @HttpCode(HttpStatus.OK)
   async admin(@AuthUser() user: UserEntity) {
     return 'only for you admin: ' + user.firstName;

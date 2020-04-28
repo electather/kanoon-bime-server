@@ -14,7 +14,7 @@ export class VehicleUpdateDto {
   @IsUUID('4')
   @IsOptional()
   @ApiPropertyOptional()
-  issuerId: string;
+  insurerId: string;
 
   @IsString()
   @IsNotEmpty()

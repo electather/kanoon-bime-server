@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { BucketTypes } from '../../common/constants/bucket-type';
-import { FileNotImageException } from '../../exceptions/file-not-image.exception';
+import { ExtensionNotSupportedException } from '../../exceptions/file-not-image.exception';
 import { IFile } from '../../interfaces/IFile';
 import { AwsS3Service } from '../../shared/services/aws-s3.service';
 import { ValidatorService } from '../../shared/services/validator.service';
@@ -33,9 +33,10 @@ export class FileService {
   ): Promise<FileEntity> {
     if (
       uploadedFile &&
-      !this._validatorService.isImage(uploadedFile.mimetype)
+      (!this._validatorService.isImage(uploadedFile.mimetype) ||
+        !this._validatorService.isArchive(uploadedFile.mimetype))
     ) {
-      throw new FileNotImageException();
+      throw new ExtensionNotSupportedException();
     }
 
     const uploadFile = await this._awsService.uploadImage(

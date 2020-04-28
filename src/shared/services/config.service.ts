@@ -28,7 +28,7 @@ export class ConfigService {
 
   public get(key: string, defaultValue = ''): string {
     if (!process.env[key]) {
-      this.#logger.error(
+      this.#logger.log(
         `environment variable ${key} was not found. using default value : '${defaultValue}'`,
       );
       return defaultValue;

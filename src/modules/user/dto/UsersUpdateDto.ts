@@ -7,16 +7,15 @@ import {
   IsString,
   IsUUID,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
 
 import {
   ToEnglishDigits,
   Trim,
 } from '../../../decorators/transforms.decorator';
-import {
-  IsCellNumber,
-  IsMelliCode,
-} from '../../../decorators/validators.decorator';
+import { IsCellNumber } from '../../../decorators/validators.decorator';
+import { UserInfoUpdateDto } from '../../userInfo/dto/UserInfoUpdateDto';
 
 export class UserUpdateDto {
   @Trim()
@@ -32,13 +31,6 @@ export class UserUpdateDto {
   @IsOptional()
   @ApiPropertyOptional()
   readonly lastName: string;
-
-  @IsString()
-  @ToEnglishDigits()
-  @IsMelliCode({ message: 'not a valid melliCode' })
-  @IsOptional()
-  @ApiPropertyOptional()
-  readonly melliCode: string;
 
   @IsString()
   @MinLength(6)
@@ -57,4 +49,9 @@ export class UserUpdateDto {
   @IsOptional()
   @ApiPropertyOptional()
   readonly avatarId: string;
+
+  @ValidateNested()
+  @IsOptional()
+  @ApiPropertyOptional()
+  readonly userInfo: UserInfoUpdateDto;
 }

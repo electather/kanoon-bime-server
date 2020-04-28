@@ -43,6 +43,13 @@ export class AwsS3Service {
     return key;
   }
 
+  deleteObject(key: string) {
+    this._s3.deleteObject({
+      Bucket: this.configService.awsS3Config.bucketName,
+      Key: key,
+    });
+  }
+
   static getImageURL(key: string): string {
     return `https://kanoon.s3.ir-thr-at1.arvanstorage.com/${key}`;
   }

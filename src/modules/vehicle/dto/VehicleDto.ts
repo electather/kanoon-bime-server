@@ -9,7 +9,7 @@ import { VehicleEntity } from '../vehicle.entity';
 
 export class VehicleDto extends AbstractDto {
   @ApiPropertyOptional({ type: () => UserDto })
-  issuer: UserDto;
+  insurer: UserDto;
 
   @ApiPropertyOptional()
   ownerName: string;
@@ -18,7 +18,7 @@ export class VehicleDto extends AbstractDto {
   ownerLastName: string;
 
   @ApiPropertyOptional()
-  address: string;
+  address?: string;
 
   @ApiPropertyOptional()
   engineNumber: string;
@@ -27,20 +27,20 @@ export class VehicleDto extends AbstractDto {
   chassisNumber: string;
 
   @ApiPropertyOptional()
-  plateFirstTwoNumbers: string;
+  plateFirstTwoNumbers?: string;
 
   @ApiPropertyOptional()
-  plateLetter: string;
+  plateLetter?: string;
 
   @ApiPropertyOptional()
-  plateLastThreeNumbers: string;
+  plateLastThreeNumbers?: string;
 
   @ApiPropertyOptional()
-  plateIRNumber: string;
+  plateIRNumber?: string;
 
   constructor(vehicle: VehicleEntity) {
     super(vehicle);
-    this.issuer = vehicle.issuer?.toDto();
+    this.insurer = vehicle.insurer?.toDto();
     this.ownerName = vehicle.ownerName;
     this.ownerLastName = vehicle.ownerLastName;
     this.address = vehicle.address;

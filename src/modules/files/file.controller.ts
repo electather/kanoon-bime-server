@@ -42,7 +42,7 @@ export class FileController {
   })
   async getFile(
     @Param('fileId', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Promise<void> {
+  ): Promise<FileDto> {
     return (await this._fileService.getFile(id)).toDto();
   }
 

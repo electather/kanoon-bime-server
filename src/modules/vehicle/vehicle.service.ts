@@ -58,7 +58,7 @@ export class VehicleService {
       ...vehicleCreateDto,
     };
     if (vehicleCreateDto.issuerId) {
-      create.issuer = { id: vehicleCreateDto.issuerId };
+      create.insurer = { id: vehicleCreateDto.issuerId };
       delete (<any>create).fromId;
     }
     const vehicle = this._vehicleRepository.create(create);
@@ -81,8 +81,8 @@ export class VehicleService {
     const update: DeepPartial<VehicleEntity> = {
       ...updatePlanDto,
     };
-    if (updatePlanDto.issuerId) {
-      update.issuer = { id: updatePlanDto.issuerId };
+    if (updatePlanDto.insurerId) {
+      update.insurer = { id: updatePlanDto.insurerId };
       delete (<any>update).fromId;
     }
 

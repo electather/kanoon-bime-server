@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
-import { DeepPartial, Equal, FindConditions, Like } from 'typeorm';
+import { DeepPartial, FindConditions, Like } from 'typeorm';
 
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
+import { UserInfoService } from '../userInfo/userInfo.service';
 import { UserDto } from './dto/UserDto';
 import { UsersPageDto } from './dto/UsersPageDto';
 import { UsersPageOptionsDto } from './dto/UsersPageOptionsDto';
@@ -14,7 +15,10 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly _userRepository: UserRepository) {}
+  constructor(
+    private readonly _userRepository: UserRepository,
+    private readonly _userInfoService: UserInfoService,
+  ) {}
 
   /**
    * Find single user
@@ -25,7 +29,7 @@ export class UserService {
     return this._userRepository.findOne(findData);
   }
 
-  async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
+  async createUser({ melliCode, ...userRegisterDto }: UserRegisterDto) {
     const create: DeepPartial<UserEntity> = {
       ...userRegisterDto,
     };
@@ -34,17 +38,19 @@ export class UserService {
       delete (<any>create).avatarId;
     }
 
-    const user = this._userRepository.create(create);
-    return this._userRepository.save(user);
+    const user = await this._userRepository.save(
+      this._userRepository.create(create),
+    );
+
+    await this._userInfoService.createUserInfo({ melliCode, userId: user.id });
+
+    return user;
   }
 
   async getUsers(pageOptionsDto: UsersPageOptionsDto): Promise<UsersPageDto> {
     const where: FindConditions<UserEntity> = {};
     if (pageOptionsDto.q) {
       where.lastName = Like(`%${pageOptionsDto.q}%`);
-    }
-    if (pageOptionsDto.melliCode) {
-      where.melliCode = Equal(pageOptionsDto.melliCode);
     }
     const [users, usersCount] = await this._userRepository.findAndCount({
       where,

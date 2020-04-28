@@ -1,4 +1,8 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 import {
@@ -81,7 +85,8 @@ async function bootstrap() {
   const port = configService.getNumber('PORT');
   await app.listen(port);
 
-  console.info(`server running on port ${port}`);
+  Logger.log(`server running on port ${port}`);
+
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
