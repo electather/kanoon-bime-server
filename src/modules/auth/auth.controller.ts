@@ -45,7 +45,10 @@ export class AuthController {
   ): Promise<LoginPayloadDto> {
     const userEntity = await this._authService.validateUser(userLoginDto);
 
-    const token = await this._authService.createToken(userEntity);
+    const token = await this._authService.createToken(
+      userEntity,
+      userLoginDto.remember,
+    );
     return new LoginPayloadDto(userEntity.toDto(), token);
   }
 

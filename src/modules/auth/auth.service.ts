@@ -21,10 +21,19 @@ export class AuthService {
     private readonly _userService: UserService,
   ) {}
 
-  async createToken(user: UserEntity | UserDto): Promise<TokenPayloadDto> {
+  async createToken(
+    user: UserEntity | UserDto,
+    remember: boolean,
+  ): Promise<TokenPayloadDto> {
+    const expiresIn = remember
+      ? this._configService.getNumber('JWT_EXPIRATION_TIME_LONG')
+      : this._configService.getNumber('JWT_EXPIRATION_TIME_SHORT');
     return new TokenPayloadDto({
-      expiresIn: this._configService.getNumber('JWT_EXPIRATION_TIME'),
-      accessToken: await this._jwtService.signAsync({ id: user.id }),
+      expiresIn,
+      accessToken: await this._jwtService.signAsync(
+        { id: user.id },
+        { expiresIn },
+      ),
     });
   }
 
