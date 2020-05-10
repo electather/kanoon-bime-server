@@ -1,7 +1,7 @@
 'use strict';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 
 import { IsCellNumber } from '../../../decorators/validators.decorator';
 
@@ -14,4 +14,8 @@ export class UserLoginDto {
   @IsString()
   @ApiProperty()
   readonly password: string;
+
+  @IsBoolean()
+  @ApiProperty()
+  readonly remember: boolean;
 }
