@@ -41,7 +41,6 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @OneToOne(() => UserInfoEntity, (info) => info.user, {
     nullable: true,
     cascade: true,
-    eager: true,
   })
   @JoinColumn()
   info?: UserInfoEntity;
