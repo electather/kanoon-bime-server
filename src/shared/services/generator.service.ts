@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { random } from 'lodash';
-import * as uuid from 'uuid/v1';
+import { v1 as uuidV1 } from 'uuid';
 
 @Injectable()
 export class GeneratorService {
   public uuid(): string {
-    return uuid();
+    return uuidV1();
   }
   public fileName(ext: string) {
     return this.uuid() + '.' + ext;
