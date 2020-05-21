@@ -66,6 +66,10 @@ export class BodyInsuranceService {
       create.vehicle = { id: bodyInsuranceCreateDto.vehicleId };
       delete (<any>create).fromId;
     }
+    if (bodyInsuranceCreateDto.attachmentId) {
+      create.attachment = { id: bodyInsuranceCreateDto.attachmentId };
+      delete (<any>create).attachmentId;
+    }
 
     const bodyInsurance = this._bodyInsuranceRepository.create(create);
     return (await this._bodyInsuranceRepository.save(bodyInsurance)).toDto();
@@ -94,6 +98,10 @@ export class BodyInsuranceService {
     if (updatePlanDto.vehicleId) {
       update.vehicle = { id: updatePlanDto.vehicleId };
       delete (<any>update).fromId;
+    }
+    if (updatePlanDto.attachmentId) {
+      update.attachment = { id: updatePlanDto.attachmentId };
+      delete (<any>update).attachmentId;
     }
     const updated = await this._bodyInsuranceRepository.update(
       id,

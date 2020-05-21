@@ -69,4 +69,9 @@ export class VehicleUpdateDto {
   @IsOptional()
   @ApiPropertyOptional()
   plateIRNumber: string;
+
+  @IsString()
+  @IsUUID('4')
+  @ApiPropertyOptional()
+  attachmentId: string;
 }

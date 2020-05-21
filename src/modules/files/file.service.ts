@@ -1,10 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { BucketTypes } from '../../common/constants/bucket-type';
-import { ExtensionNotSupportedException } from '../../exceptions/file-not-image.exception';
 import { IFile } from '../../interfaces/IFile';
 import { AwsS3Service } from '../../shared/services/aws-s3.service';
-import { ValidatorService } from '../../shared/services/validator.service';
 import { AuthService } from '../auth/auth.service';
 import { CreateFileDto } from './dto/FileCreateDto';
 import { FileDto } from './dto/FileDto';
@@ -16,7 +14,6 @@ export class FileService {
   constructor(
     private readonly _fileRepository: FileRepository,
     private readonly _awsService: AwsS3Service,
-    private readonly _validatorService: ValidatorService,
   ) {}
 
   async getFile(id: string): Promise<FileEntity> {
@@ -31,14 +28,6 @@ export class FileService {
     createFileDto: CreateFileDto,
     uploadedFile: IFile,
   ): Promise<FileEntity> {
-    if (
-      uploadedFile &&
-      (!this._validatorService.isImage(uploadedFile.mimetype) ||
-        !this._validatorService.isArchive(uploadedFile.mimetype))
-    ) {
-      throw new ExtensionNotSupportedException();
-    }
-
     const uploadFile = await this._awsService.uploadImage(
       uploadedFile,
       BucketTypes.COMMON,

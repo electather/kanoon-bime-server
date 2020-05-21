@@ -5,6 +5,7 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -13,45 +14,58 @@ import {
   Min,
 } from 'class-validator';
 
+import { InsuranceType } from '../../../common/constants/insurance-type';
+
 export class BodyInsuranceUpdateDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
   @ApiPropertyOptional()
-  bimeNumber: string;
+  bimeNumber?: string;
 
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   @ApiPropertyOptional()
-  startDate: string;
+  startDate?: string;
 
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   @ApiPropertyOptional()
-  endDate: string;
+  endDate?: string;
 
   @IsBoolean()
   @IsOptional()
   @ApiPropertyOptional()
-  isCash: boolean;
+  isCash?: boolean;
 
   @IsNumber()
   @Min(0)
   @IsOptional()
   @ApiPropertyOptional()
-  fullAmount: number;
+  fullAmount?: number;
 
   @IsString()
   @IsUUID('4')
   @IsOptional()
   @ApiPropertyOptional()
-  insurerId: string;
+  insurerId?: string;
 
   @IsString()
   @IsUUID('4')
   @IsOptional()
   @ApiPropertyOptional()
-  vehicleId: string;
+  vehicleId?: string;
+
+  @IsEnum(InsuranceType)
+  @IsOptional()
+  @ApiPropertyOptional({ enum: InsuranceType })
+  insurance?: InsuranceType;
+
+  @IsString()
+  @IsUUID('4')
+  @IsOptional()
+  @ApiPropertyOptional()
+  attachmentId?: string;
 }

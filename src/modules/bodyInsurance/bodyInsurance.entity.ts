@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '../../common/abstract.entity';
+import { InsuranceType } from '../../common/constants/insurance-type';
 import { FileEntity } from '../files/file.entity';
 import { UserEntity } from '../user/user.entity';
 import { VehicleEntity } from '../vehicle/vehicle.entity';
@@ -29,7 +30,10 @@ export class BodyInsuranceEntity extends AbstractEntity<BodyInsuranceDto> {
   @ManyToOne(() => VehicleEntity)
   insurer: UserEntity;
 
-  @ManyToOne(() => FileEntity)
+  @Column({ type: 'enum', enum: InsuranceType, nullable: false })
+  insurance: InsuranceType;
+
+  @ManyToOne(() => FileEntity, { nullable: false })
   attachment: FileEntity;
 
   dtoClass = BodyInsuranceDto;

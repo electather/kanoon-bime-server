@@ -3,6 +3,8 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '../../common/abstract.entity';
 import { ThirdPartyDto } from './dto/ThirdPartyDto';
+import { InsuranceType } from '../../common/constants/insurance-type';
+import { FileEntity } from '../files/file.entity';
 import { VehicleEntity } from '../vehicle/vehicle.entity';
 import { UserEntity } from '../user/user.entity';
 
@@ -28,6 +30,12 @@ export class ThirdPartyEntity extends AbstractEntity<ThirdPartyDto> {
 
   @ManyToOne(() => VehicleEntity)
   insurer: UserEntity;
+
+  @Column({ type: 'enum', enum: InsuranceType, nullable: false })
+  insurance: InsuranceType;
+
+  @ManyToOne(() => FileEntity, { nullable: false })
+  attachment: FileEntity;
 
   dtoClass = ThirdPartyDto;
 }

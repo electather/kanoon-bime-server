@@ -5,6 +5,7 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -12,6 +13,8 @@ import {
   IsUUID,
   Min,
 } from 'class-validator';
+
+import { InsuranceType } from '../../../common/constants/insurance-type';
 
 export class ThirdPartyUpdateDto {
   @IsString()
@@ -54,4 +57,15 @@ export class ThirdPartyUpdateDto {
   @IsOptional()
   @ApiPropertyOptional()
   vehicleId: string;
+
+  @IsEnum(InsuranceType)
+  @IsOptional()
+  @ApiPropertyOptional({ enum: InsuranceType })
+  insurance?: InsuranceType;
+
+  @IsString()
+  @IsUUID('4')
+  @IsOptional()
+  @ApiPropertyOptional()
+  attachmentId?: string;
 }

@@ -5,6 +5,7 @@ import { AbstractEntity } from '../../common/abstract.entity';
 import { VehicleDto } from './dto/VehicleDto';
 import { UserEntity } from '../user/user.entity';
 import { ThirdPartyEntity } from '../thirdParty/thirdParty.entity';
+import { FileEntity } from '../files/file.entity';
 
 @Entity({ name: 'vehicles' })
 export class VehicleEntity extends AbstractEntity<VehicleDto> {
@@ -49,6 +50,9 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
 
   @OneToMany(() => ThirdPartyEntity, (item) => item.vehicle, { cascade: true })
   tpi?: ThirdPartyEntity[];
+
+  @ManyToOne(() => FileEntity, { nullable: false })
+  attachment: FileEntity;
 
   dtoClass = VehicleDto;
 }

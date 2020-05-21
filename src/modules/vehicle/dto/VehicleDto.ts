@@ -4,6 +4,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 import { AbstractDto } from '../../../common/dto/AbstractDto';
+import { FileDto } from '../../../modules/files/dto/FileDto';
 import { UserDto } from '../../user/dto/UserDto';
 import { VehicleEntity } from '../vehicle.entity';
 
@@ -37,6 +38,9 @@ export class VehicleDto extends AbstractDto {
 
   @ApiPropertyOptional()
   plateIRNumber?: string;
+
+  @ApiPropertyOptional({ type: () => FileDto })
+  attachment?: FileDto;
 
   constructor(vehicle: VehicleEntity) {
     super(vehicle);

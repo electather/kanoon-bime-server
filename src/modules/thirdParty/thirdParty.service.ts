@@ -49,18 +49,22 @@ export class ThirdPartyService {
   }
 
   async createThirdParty(
-    thirdPartyCreateDto: ThirdPartyCreateDto,
+    createDto: ThirdPartyCreateDto,
   ): Promise<ThirdPartyDto> {
     const create: DeepPartial<ThirdPartyEntity> = {
-      ...thirdPartyCreateDto,
+      ...createDto,
     };
-    if (thirdPartyCreateDto.insurerId) {
-      create.insurer = { id: thirdPartyCreateDto.insurerId };
+    if (createDto.insurerId) {
+      create.insurer = { id: createDto.insurerId };
       delete (<any>create).fromId;
     }
-    if (thirdPartyCreateDto.vehicleId) {
-      create.vehicle = { id: thirdPartyCreateDto.vehicleId };
+    if (createDto.vehicleId) {
+      create.vehicle = { id: createDto.vehicleId };
       delete (<any>create).fromId;
+    }
+    if (createDto.attachmentId) {
+      create.attachment = { id: createDto.attachmentId };
+      delete (<any>create).attachmentId;
     }
 
     const thirdParty = this._thirdPartyRepository.create(create);
@@ -91,6 +95,11 @@ export class ThirdPartyService {
       update.vehicle = { id: updatePlanDto.vehicleId };
       delete (<any>update).fromId;
     }
+    if (updatePlanDto.attachmentId) {
+      update.attachment = { id: updatePlanDto.attachmentId };
+      delete (<any>update).attachmentId;
+    }
+
     const updated = await this._thirdPartyRepository.update(
       id,
       pickBy(update, identity),

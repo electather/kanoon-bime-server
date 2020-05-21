@@ -53,13 +53,17 @@ export class VehicleService {
     return new VehiclesPageDto(vehicles.toDtos(), pageMetaDto);
   }
 
-  async createVehicle(vehicleCreateDto: VehicleCreateDto): Promise<VehicleDto> {
+  async createVehicle(createDto: VehicleCreateDto): Promise<VehicleDto> {
     const create: DeepPartial<VehicleEntity> = {
-      ...vehicleCreateDto,
+      ...createDto,
     };
-    if (vehicleCreateDto.issuerId) {
-      create.insurer = { id: vehicleCreateDto.issuerId };
+    if (createDto.issuerId) {
+      create.insurer = { id: createDto.issuerId };
       delete (<any>create).fromId;
+    }
+    if (createDto.attachmentId) {
+      create.attachment = { id: createDto.attachmentId };
+      delete (<any>create).attachmentId;
     }
     const vehicle = this._vehicleRepository.create(create);
     return (await this._vehicleRepository.save(vehicle)).toDto();
@@ -84,6 +88,10 @@ export class VehicleService {
     if (updatePlanDto.insurerId) {
       update.insurer = { id: updatePlanDto.insurerId };
       delete (<any>update).fromId;
+    }
+    if (updatePlanDto.attachmentId) {
+      update.attachment = { id: updatePlanDto.attachmentId };
+      delete (<any>update).attachmentId;
     }
 
     const updated = await this._vehicleRepository.update(

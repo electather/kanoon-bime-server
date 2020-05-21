@@ -60,4 +60,9 @@ export class VehicleCreateDto {
   @Length(2, 2)
   @ApiProperty()
   plateIRNumber: string;
+
+  @IsString()
+  @IsUUID('4')
+  @ApiProperty()
+  attachmentId: string;
 }
