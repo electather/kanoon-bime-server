@@ -1,5 +1,3 @@
-'use strict';
-
 import {
   Body,
   Controller,
@@ -40,7 +38,7 @@ import { BodyInsuranceUpdateDto } from './dto/BodyInsuranceUpdateDto';
 export class BodyInsuranceController {
   constructor(private _bodyInsuranceService: BodyInsuranceService) {}
 
-  @Get(':id')
+  @Get('info/:id')
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
@@ -53,6 +51,18 @@ export class BodyInsuranceController {
     id: string,
   ): Promise<BodyInsuranceDto> {
     return (await this._bodyInsuranceService.findOne(id))?.toDto();
+  }
+
+  @Get('stats')
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get stats',
+    type: BodyInsurancePageDto,
+  })
+  async getStats() {
+    return this._bodyInsuranceService.getStats();
   }
 
   @Get()

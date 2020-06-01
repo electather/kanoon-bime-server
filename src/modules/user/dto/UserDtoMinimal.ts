@@ -20,11 +20,15 @@ export class UserDtoMinimal extends MinimalAbstractDto {
   @ApiPropertyOptional({ nullable: true, type: () => FileDto })
   avatar?: FileDto;
 
+  @ApiPropertyOptional()
+  melliCode?: string;
+
   constructor(user: UserDto) {
     super(user);
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.role = user.role;
     this.avatar = user.avatar;
+    this.melliCode = user.info?.melliCode;
   }
 }

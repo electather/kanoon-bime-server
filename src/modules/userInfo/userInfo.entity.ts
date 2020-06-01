@@ -17,13 +17,13 @@ export class UserInfoEntity extends AbstractEntity<UserInfoDto> {
   @Column({ nullable: true })
   address?: string;
 
-  @ManyToOne(() => FileEntity, { nullable: true })
+  @ManyToOne(() => FileEntity, { nullable: true, eager: true })
   melliCardScanFront?: FileEntity;
 
-  @ManyToOne(() => FileEntity, { nullable: true })
+  @ManyToOne(() => FileEntity, { nullable: true, eager: true })
   melliCardScanBack?: FileEntity;
 
-  @ManyToOne(() => FileEntity, { nullable: true })
+  @ManyToOne(() => FileEntity, { nullable: true, eager: true })
   payrollScan?: FileEntity;
 
   dtoClass = UserInfoDto;

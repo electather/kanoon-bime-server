@@ -112,4 +112,8 @@ export class BodyInsuranceService {
     }
     return (await this.findOne(id)).toDto();
   }
+
+  async getStats() {
+    return null;
+  }
 }

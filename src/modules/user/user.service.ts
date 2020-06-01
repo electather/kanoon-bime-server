@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
-import { DeepPartial, FindConditions, Like } from 'typeorm';
+import { DeepPartial, FindConditions, FindOneOptions, Like } from 'typeorm';
 
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
 import { UserInfoService } from '../userInfo/userInfo.service';
+import { UserCreateDTO } from './dto/UserCreateDto';
 import { UserDto } from './dto/UserDto';
 import { UsersPageDto } from './dto/UsersPageDto';
 import { UsersPageOptionsDto } from './dto/UsersPageOptionsDto';
@@ -23,19 +24,69 @@ export class UserService {
   /**
    * Find single user
    */
-  findOne(
+  async findOne(
     findData: FindConditions<UserEntity>,
-  ): Promise<UserEntity | undefined> {
-    return this._userRepository.findOne(findData);
+    options?: FindOneOptions<UserEntity>,
+  ): Promise<UserEntity> {
+    const user = await this._userRepository.findOne(findData, options);
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    return user;
   }
 
-  async createUser({ melliCode, ...userRegisterDto }: UserRegisterDto) {
+  async createUser(
+    {
+      melliCode,
+      address,
+      melliCardScanFrontId,
+      melliCardScanBackId,
+      payrollScanId,
+      // eslint-disable-next-line @typescript-eslint/tslint/config
+      ...userRegisterDto
+    }: UserCreateDTO,
+    creator: UserEntity,
+  ) {
     const create: DeepPartial<UserEntity> = {
       ...userRegisterDto,
     };
     if (userRegisterDto.avatarId) {
       create.avatar = { id: userRegisterDto.avatarId };
       delete (<any>create).avatarId;
+    }
+
+    create.creator = { id: creator.id };
+
+    const user = await this._userRepository.save(
+      this._userRepository.create(create),
+    );
+
+    await this._userInfoService.createUserInfo({
+      melliCode,
+      address,
+      melliCardScanFrontId,
+      melliCardScanBackId,
+      payrollScanId,
+      userId: user.id,
+    });
+
+    return user;
+  }
+
+  async registerUser(
+    { melliCode, ...userRegisterDto }: UserRegisterDto,
+    creator?: UserEntity,
+  ) {
+    const create: DeepPartial<UserEntity> = {
+      ...userRegisterDto,
+    };
+    if (userRegisterDto.avatarId) {
+      create.avatar = { id: userRegisterDto.avatarId };
+      delete (<any>create).avatarId;
+    }
+
+    if (creator) {
+      create.creator = { id: creator.id };
     }
 
     const user = await this._userRepository.save(
@@ -52,6 +103,10 @@ export class UserService {
     if (pageOptionsDto.q) {
       where.lastName = Like(`%${pageOptionsDto.q}%`);
     }
+    if (pageOptionsDto.melliCode) {
+      where.info = { melliCode: Like(`%${pageOptionsDto.melliCode}%`) };
+    }
+
     const [users, usersCount] = await this._userRepository.findAndCount({
       where,
       take: pageOptionsDto.take,
@@ -59,6 +114,7 @@ export class UserService {
       order: {
         createdAt: pageOptionsDto.order,
       },
+      relations: ['info'],
     });
     const pageMetaDto = new PageMetaDto({
       pageOptionsDto,
@@ -67,15 +123,26 @@ export class UserService {
     return new UsersPageDto(users.toDtos(), pageMetaDto);
   }
 
-  async updateUser(id: string, userUpdateDto: UserUpdateDto): Promise<UserDto> {
-    const found = await this.findOne({ id });
-    if (!found) {
-      throw new UserNotFoundException();
+  async updateUser(
+    id: string,
+    userUpdateDto: UserUpdateDto,
+    editor?: UserEntity,
+  ): Promise<UserDto> {
+    const found = await this.findOne(
+      { id },
+      {
+        relations: ['creator'],
+      },
+    );
+    if (found.creator?.id && found.creator?.id !== editor?.id) {
+      throw new UnauthorizedException('you are not the creator!');
     }
 
     const update: DeepPartial<UserEntity> = {
       ...userUpdateDto,
+      creator: { id: editor?.id },
     };
+
     if (userUpdateDto.avatarId) {
       update.avatar = { id: userUpdateDto.avatarId };
       delete (<any>update).avatarId;
