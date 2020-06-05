@@ -14,11 +14,23 @@ export class BodyInsurancePageOptionsDto extends PageOptionsDto {
   @Type(() => Date)
   @IsOptional()
   @ApiPropertyOptional()
-  readonly startDate?: string;
+  readonly creationDateMin?: string;
 
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   @ApiPropertyOptional()
-  readonly endDate?: string;
+  readonly creationDateMax?: string;
+
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @ApiPropertyOptional()
+  readonly expiryDateMin?: string;
+
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @ApiPropertyOptional()
+  readonly expiryDateMax?: string;
 }

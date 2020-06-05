@@ -48,6 +48,6 @@ export class ThirdPartyDto extends AbstractDto {
     this.insurer = entity.insurer?.toDto();
     this.vehicle = entity.vehicle?.toDto();
     this.insurance = entity.insurance;
-    this.attachment = entity.attachment.toDto();
+    this.attachment = entity.attachment?.toDto();
   }
 }

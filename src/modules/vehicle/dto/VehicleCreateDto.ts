@@ -1,67 +1,80 @@
 'use strict';
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
   Length,
+  Max,
+  Min,
 } from 'class-validator';
 
 export class VehicleCreateDto {
-  @IsString()
+  @IsString({ message: 'error.string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @IsUUID('4')
   @ApiProperty()
   issuerId: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @ApiProperty()
   ownerName: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @ApiProperty()
   ownerLastName: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @IsOptional()
   @ApiPropertyOptional()
   address: string;
 
-  @IsString()
+  @IsString({ message: 'error.string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @Length(4, 17)
   @ApiProperty()
   engineNumber: string;
 
-  @IsString()
+  @IsString({ message: 'error.string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @Length(4, 20)
   @ApiProperty()
   chassisNumber: string;
 
-  @IsString()
-  @Length(2, 2)
+  @IsNumber(undefined, { message: 'error.number' })
+  @Min(10)
+  @Max(99)
   @ApiProperty()
-  plateFirstTwoNumbers: string;
+  plateFirstTwoNumbers: number;
 
-  @IsString()
-  @Length(1, 1)
+  @IsNumber(undefined, { message: 'error.number' })
+  @Min(1)
+  @Max(31)
+  @Type(() => Number)
   @ApiProperty()
-  plateLetter: string;
+  plateLetter: number;
 
-  @IsString()
-  @Length(3, 3)
+  @IsNumber(undefined, { message: 'error.number' })
+  @Min(100)
+  @Max(999)
   @ApiProperty()
-  plateLastThreeNumbers: string;
+  plateLastThreeNumbers: number;
 
-  @IsString()
-  @Length(2, 2)
+  @IsNumber(undefined, { message: 'error.number' })
+  @Min(0)
+  @Max(99)
   @ApiProperty()
-  plateIRNumber: string;
+  plateIRNumber: number;
 
-  @IsString()
+  @IsString({ message: 'error.string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @IsUUID('4')
   @ApiProperty()
   attachmentId: string;

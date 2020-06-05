@@ -24,7 +24,7 @@ export class BodyInsuranceEntity extends AbstractEntity<BodyInsuranceDto> {
   @Column({ type: 'int8' })
   fullAmount: number;
 
-  @ManyToOne(() => VehicleEntity, (item) => item.tpi)
+  @ManyToOne(() => VehicleEntity, (item) => item.bodyInsurance)
   vehicle: VehicleEntity;
 
   @ManyToOne(() => VehicleEntity)

@@ -16,46 +16,46 @@ import {
 import { InsuranceType } from '../../../common/constants/insurance-type';
 
 export class ThirdPartyCreateDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.must-be-string' })
+  @IsNotEmpty({ message: 'error.empty' })
   @ApiProperty()
   bimeNumber: string;
 
-  @IsDate()
+  @IsDate({ message: 'error.must-be-date' })
   @Type(() => Date)
   @ApiProperty()
   startDate: string;
 
-  @IsDate()
+  @IsDate({ message: 'error.must-be-date' })
   @Type(() => Date)
   @ApiProperty()
   endDate: string;
 
-  @IsBoolean()
+  @IsBoolean({ message: 'error.must-be-boolean' })
   @ApiProperty()
   isCash: boolean;
 
-  @IsNumber()
+  @IsNumber({}, { message: 'error.must-be-number' })
   @Min(0)
   @ApiProperty()
   fullAmount: number;
 
-  @IsString()
-  @IsUUID('4')
+  @IsString({ message: 'error.must-be-string' })
+  @IsUUID('4', { message: 'error.must-be-uuid' })
   @ApiProperty()
   insurerId: string;
 
-  @IsString()
+  @IsString({ message: 'error.must-be-string' })
   @IsUUID('4')
   @ApiProperty()
   vehicleId: string;
 
-  @IsEnum(InsuranceType)
+  @IsEnum(InsuranceType, { message: 'error.must-be-enum' })
   @ApiProperty({ enum: InsuranceType })
   insurance: InsuranceType;
 
-  @IsString()
-  @IsUUID('4')
+  @IsString({ message: 'error.must-be-string' })
+  @IsUUID('4', { message: 'error.must-be-uuid' })
   @ApiProperty()
   attachmentId: string;
 }

@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
 import { DeepPartial, FindConditions, FindOneOptions, Like } from 'typeorm';
 
+import { RoleType } from '../../common/constants/role-type';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
@@ -97,7 +98,13 @@ export class UserService {
 
     return user;
   }
-
+  /**
+   * @deprecated
+   *
+   * @param {UsersPageOptionsDto} pageOptionsDto
+   * @returns {Promise<UsersPageDto>}
+   * @memberof UserService
+   */
   async getUsers(pageOptionsDto: UsersPageOptionsDto): Promise<UsersPageDto> {
     const where: FindConditions<UserEntity> = {};
     if (pageOptionsDto.q) {
@@ -114,12 +121,43 @@ export class UserService {
       order: {
         createdAt: pageOptionsDto.order,
       },
-      relations: ['info'],
+      relations: ['info', 'avatar'],
     });
     const pageMetaDto = new PageMetaDto({
       pageOptionsDto,
       itemCount: usersCount,
     });
+    return new UsersPageDto(users.toDtos(), pageMetaDto);
+  }
+
+  async getUsersAlt(
+    pageOptionsDto: UsersPageOptionsDto,
+  ): Promise<UsersPageDto> {
+    const qb = this._userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.info', 'info')
+      .leftJoinAndSelect('user.avatar', 'avatar')
+      .where('user.role = :role', { role: RoleType.BIME_GOZAR });
+    if (pageOptionsDto.q) {
+      qb.orWhere('user.first_name LIKE :firstName', {
+        firstName: pageOptionsDto.q,
+      });
+      qb.orWhere('user.last_name LIKE :lastName', {
+        lastName: pageOptionsDto.q,
+      });
+    }
+    if (pageOptionsDto.melliCode) {
+      qb.andWhere('info.melli_code LIKE :melliCode', {
+        melliCode: '%' + pageOptionsDto.melliCode + '%',
+      });
+    }
+
+    const [users, usersCount] = await qb.getManyAndCount();
+    const pageMetaDto = new PageMetaDto({
+      pageOptionsDto,
+      itemCount: usersCount,
+    });
+
     return new UsersPageDto(users.toDtos(), pageMetaDto);
   }
 

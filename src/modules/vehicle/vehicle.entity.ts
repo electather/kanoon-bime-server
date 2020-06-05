@@ -6,6 +6,7 @@ import { VehicleDto } from './dto/VehicleDto';
 import { UserEntity } from '../user/user.entity';
 import { ThirdPartyEntity } from '../thirdParty/thirdParty.entity';
 import { FileEntity } from '../files/file.entity';
+import { BodyInsuranceEntity } from '../bodyInsurance/bodyInsurance.entity';
 
 @Entity({ name: 'vehicles' })
 export class VehicleEntity extends AbstractEntity<VehicleDto> {
@@ -27,17 +28,17 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
   @Column({ unique: true, nullable: false })
   chassisNumber: string;
 
-  @Column({ nullable: true, type: 'varchar', length: 2 })
-  plateFirstTwoNumbers?: string;
+  @Column({ nullable: true })
+  plateFirstTwoNumbers?: number;
 
-  @Column({ nullable: true, type: 'varchar', length: 1 })
-  plateLetter?: string;
+  @Column({ nullable: true })
+  plateLetter?: number;
 
-  @Column({ nullable: true, type: 'varchar', length: 3 })
-  plateLastThreeNumbers?: string;
+  @Column({ nullable: true })
+  plateLastThreeNumbers?: number;
 
-  @Column({ nullable: true, type: 'varchar', length: 2 })
-  plateIRNumber?: string;
+  @Column({ nullable: true })
+  plateIRNumber?: number;
 
   @Column({ nullable: true })
   payroll?: string;
@@ -50,6 +51,11 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
 
   @OneToMany(() => ThirdPartyEntity, (item) => item.vehicle, { cascade: true })
   tpi?: ThirdPartyEntity[];
+
+  @OneToMany(() => BodyInsuranceEntity, (item) => item.vehicle, {
+    cascade: true,
+  })
+  bodyInsurance?: BodyInsuranceEntity[];
 
   @ManyToOne(() => FileEntity, { nullable: false })
   attachment: FileEntity;

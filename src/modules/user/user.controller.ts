@@ -50,7 +50,7 @@ export class UserController {
     @Query(new ValidationPipe({ transform: true }))
     pageOptionsDto: UsersPageOptionsDto,
   ): Promise<UsersPageDto> {
-    return this._userService.getUsers(pageOptionsDto);
+    return this._userService.getUsersAlt(pageOptionsDto);
   }
 
   @Get(':id')
@@ -66,7 +66,7 @@ export class UserController {
     id: string,
   ): Promise<UserDto> {
     return (
-      await this._userService.findOne({ id }, { relations: ['info'] })
+      await this._userService.findOne({ id }, { relations: ['info', 'avatar'] })
     )?.toDto();
   }
 

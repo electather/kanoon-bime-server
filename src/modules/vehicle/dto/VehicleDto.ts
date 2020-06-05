@@ -28,16 +28,16 @@ export class VehicleDto extends AbstractDto {
   chassisNumber: string;
 
   @ApiPropertyOptional()
-  plateFirstTwoNumbers?: string;
+  plateFirstTwoNumbers?: number;
 
   @ApiPropertyOptional()
-  plateLetter?: string;
+  plateLetter?: number;
 
   @ApiPropertyOptional()
-  plateLastThreeNumbers?: string;
+  plateLastThreeNumbers?: number;
 
   @ApiPropertyOptional()
-  plateIRNumber?: string;
+  plateIRNumber?: number;
 
   @ApiPropertyOptional({ type: () => FileDto })
   attachment?: FileDto;

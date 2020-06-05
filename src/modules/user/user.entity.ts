@@ -32,7 +32,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @Column({ nullable: true, transformer: new PasswordTransformer() })
   password?: string;
 
-  @ManyToOne(() => FileEntity, { nullable: true })
+  @ManyToOne(() => FileEntity, { nullable: true, eager: true })
   avatar?: FileEntity;
 
   @OneToMany(() => VehicleEntity, (item) => item.insurer)

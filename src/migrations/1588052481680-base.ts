@@ -150,7 +150,7 @@ export class Base1588052481680 implements MigrationInterface {
       `ALTER TABLE "third-party-insurance"
         ADD CONSTRAINT "FK_cd5454252f9e6257f2e849634b9"
         FOREIGN KEY ("insurer_id")
-        REFERENCES "vehicles"("id")
+        REFERENCES "users"("id")
         ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
