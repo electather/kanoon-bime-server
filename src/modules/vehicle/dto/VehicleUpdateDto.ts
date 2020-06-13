@@ -3,10 +3,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
   Length,
+  Max,
+  Min,
 } from 'class-validator';
 
 export class VehicleUpdateDto {
@@ -46,29 +49,33 @@ export class VehicleUpdateDto {
   @ApiPropertyOptional()
   chassisNumber: string;
 
-  @IsString()
-  @Length(2, 2)
+  @IsNumber()
+  @Min(10)
+  @Max(99)
   @IsOptional()
   @ApiPropertyOptional()
-  plateFirstTwoNumbers: string;
+  plateFirstTwoNumbers: number;
 
-  @IsString()
-  @Length(1, 1)
+  @IsNumber()
+  @Min(1)
+  @Max(31)
   @IsOptional()
   @ApiPropertyOptional()
-  plateLetter: string;
+  plateLetter: number;
 
-  @IsString()
-  @Length(3, 3)
+  @IsNumber()
+  @Min(100)
+  @Max(999)
   @IsOptional()
   @ApiPropertyOptional()
-  plateLastThreeNumbers: string;
+  plateLastThreeNumbers: number;
 
-  @IsString()
-  @Length(2, 2)
+  @IsNumber()
+  @Min(10)
+  @Max(99)
   @IsOptional()
   @ApiPropertyOptional()
-  plateIRNumber: string;
+  plateIRNumber: number;
 
   @IsString()
   @IsUUID('4')

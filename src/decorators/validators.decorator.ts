@@ -37,7 +37,7 @@ export function IsMelliCode(
       options: validationOptions,
       validator: {
         validate(value: string, _args: ValidationArguments) {
-          if (value.length !== 10 || /(\d)(\1){9}/.test(value)) {
+          if (value?.length !== 10 || /(\d)(\1){9}/.test(value)) {
             return false;
           }
 

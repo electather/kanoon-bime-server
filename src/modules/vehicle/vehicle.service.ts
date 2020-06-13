@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
-import { DeepPartial, FindConditions, Like } from 'typeorm';
+import { DeepPartial, FindConditions, FindOneOptions, Like } from 'typeorm';
 
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
+import { UserEntity } from '../user/user.entity';
 import { VehicleCreateDto } from './dto/VehicleCreateDto';
 import { VehicleDto } from './dto/VehicleDto';
 import { VehiclesPageDto } from './dto/VehiclePageDto';
@@ -18,10 +19,11 @@ export class VehicleService {
   /**
    * Find single vehicle
    */
-  async findOne(id: string): Promise<VehicleEntity> {
-    const vehicle = await this._vehicleRepository.findOne(id, {
-      relations: ['issuer'],
-    });
+  async findOne(
+    findData: FindConditions<VehicleEntity>,
+    options?: FindOneOptions<VehicleEntity>,
+  ): Promise<VehicleEntity> {
+    const vehicle = await this._vehicleRepository.findOne(findData, options);
     if (!vehicle) {
       throw new NotFoundException();
     }
@@ -35,6 +37,9 @@ export class VehicleService {
     if (pageOptionsDto.q) {
       where.ownerLastName = Like(`%${pageOptionsDto.q}%`);
     }
+    if (pageOptionsDto.chassisNumber) {
+      where.chassisNumber = Like(`%${pageOptionsDto.chassisNumber}%`);
+    }
     const [
       vehicles,
       vehiclesCount,
@@ -45,6 +50,7 @@ export class VehicleService {
       order: {
         createdAt: pageOptionsDto.order,
       },
+      relations: ['insurer'],
     });
     const pageMetaDto = new PageMetaDto({
       pageOptionsDto,
@@ -53,7 +59,10 @@ export class VehicleService {
     return new VehiclesPageDto(vehicles.toDtos(), pageMetaDto);
   }
 
-  async createVehicle(createDto: VehicleCreateDto): Promise<VehicleDto> {
+  async createVehicle(
+    createDto: VehicleCreateDto,
+    _creator?: UserEntity,
+  ): Promise<VehicleEntity> {
     const create: DeepPartial<VehicleEntity> = {
       ...createDto,
     };
@@ -66,11 +75,11 @@ export class VehicleService {
       delete (<any>create).attachmentId;
     }
     const vehicle = this._vehicleRepository.create(create);
-    return (await this._vehicleRepository.save(vehicle)).toDto();
+    return this._vehicleRepository.save(vehicle);
   }
 
-  async deleteVehicle(id: string): Promise<VehicleDto> {
-    const found = await this.findOne(id);
+  async deleteVehicle(id: string, _creator?: UserEntity): Promise<VehicleDto> {
+    const found = await this.findOne({ id });
     const vehicle = await this._vehicleRepository.delete(id);
     if (vehicle.affected === 0) {
       throw new NotFoundException();
@@ -81,6 +90,7 @@ export class VehicleService {
   async updateVehicle(
     id: string,
     updatePlanDto: VehicleUpdateDto,
+    _creator?: UserEntity,
   ): Promise<VehicleDto> {
     const update: DeepPartial<VehicleEntity> = {
       ...updatePlanDto,
@@ -101,6 +111,6 @@ export class VehicleService {
     if (updated.affected === 0) {
       throw new NotFoundException();
     }
-    return (await this.findOne(id)).toDto();
+    return (await this.findOne({ id })).toDto();
   }
 }

@@ -11,7 +11,6 @@ export class FileEntity extends AbstractEntity<FileDto> {
 
   @ManyToOne(() => UserEntity, {
     nullable: false,
-    eager: true,
   })
   creator: UserEntity;
 

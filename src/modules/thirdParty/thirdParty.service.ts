@@ -1,6 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
-import { DeepPartial, FindConditions } from 'typeorm';
+import {
+  Between,
+  DeepPartial,
+  FindConditions,
+  LessThanOrEqual,
+  Like,
+  MoreThanOrEqual,
+} from 'typeorm';
 
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { ThirdPartyCreateDto } from './dto/ThirdPartyCreateDto';
@@ -30,6 +37,35 @@ export class ThirdPartyService {
     pageOptionsDto: ThirdPartyPageOptionsDto,
   ): Promise<ThirdPartyPageDto> {
     const where: FindConditions<ThirdPartyEntity> = {};
+    if (pageOptionsDto.bimeNumber) {
+      where.bimeNumber = Like(`%${pageOptionsDto.bimeNumber}%`);
+    }
+    if (pageOptionsDto.creationDateMin && !pageOptionsDto.creationDateMax) {
+      where.startDate = MoreThanOrEqual(pageOptionsDto.creationDateMin);
+    } else if (
+      !pageOptionsDto.creationDateMin &&
+      pageOptionsDto.creationDateMax
+    ) {
+      where.startDate = LessThanOrEqual(pageOptionsDto.creationDateMax);
+    } else if (
+      pageOptionsDto.creationDateMin &&
+      pageOptionsDto.creationDateMax
+    ) {
+      where.startDate = Between(
+        pageOptionsDto.creationDateMin,
+        pageOptionsDto.creationDateMax,
+      );
+    }
+    if (pageOptionsDto.expiryDateMin && !pageOptionsDto.expiryDateMax) {
+      where.endDate = MoreThanOrEqual(pageOptionsDto.expiryDateMin);
+    } else if (!pageOptionsDto.expiryDateMin && pageOptionsDto.expiryDateMax) {
+      where.endDate = LessThanOrEqual(pageOptionsDto.expiryDateMax);
+    } else if (pageOptionsDto.expiryDateMin && pageOptionsDto.expiryDateMax) {
+      where.endDate = Between(
+        pageOptionsDto.expiryDateMin,
+        pageOptionsDto.expiryDateMax,
+      );
+    }
     const [
       thirdParty,
       thirdPartyCount,
@@ -40,6 +76,7 @@ export class ThirdPartyService {
       order: {
         createdAt: pageOptionsDto.order,
       },
+      relations: ['insurer'],
     });
     const pageMetaDto = new PageMetaDto({
       pageOptionsDto,

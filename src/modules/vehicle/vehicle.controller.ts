@@ -13,6 +13,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -23,9 +24,12 @@ import {
 } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
+import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RolesGuard } from '../../guards/roles.guard';
+import { AuthUserInterceptor } from '../../interceptors/auth-user-interceptor.service';
+import { UserEntity } from '../../modules/user/user.entity';
 import { VehicleCreateDto } from './dto/VehicleCreateDto';
 import { VehicleDto } from './dto/VehicleDto';
 import { VehiclesPageDto } from './dto/VehiclePageDto';
@@ -37,6 +41,7 @@ import { VehicleService } from './vehicle.service';
 @ApiTags('vehicles')
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth()
+@UseInterceptors(AuthUserInterceptor)
 export class VehicleController {
   constructor(private _vehicleService: VehicleService) {}
 
@@ -52,7 +57,7 @@ export class VehicleController {
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
   ): Promise<VehicleDto> {
-    return (await this._vehicleService.findOne(id))?.toDto();
+    return (await this._vehicleService.findOne({ id }))?.toDto();
   }
 
   @Get()
@@ -69,46 +74,71 @@ export class VehicleController {
   ): Promise<VehiclesPageDto> {
     return this._vehicleService.getVehicles(pageOptionsDto);
   }
-
-  @Post()
+  @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @ApiOkResponse({
     type: VehicleDto,
-    description: 'created object',
+    description: 'vehicle',
   })
-  createArchiveLocation(
-    @Body() createArchiveLocationDto: VehicleCreateDto,
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @UseGuards(AuthGuard, RolesGuard)
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' }))
+    id: string,
   ): Promise<VehicleDto> {
-    return this._vehicleService.createVehicle(createArchiveLocationDto);
+    return (
+      await this._vehicleService.findOne(
+        { id },
+        { relations: ['insurer', 'tpi', 'attachment'] },
+      )
+    )?.toDto();
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOkResponse({
+    type: VehicleDto,
+    description: 'Created item',
+  })
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @UseGuards(AuthGuard, RolesGuard)
+  async createOne(
+    @AuthUser() creator: UserEntity,
+    @Body() dto: VehicleCreateDto,
+  ): Promise<VehicleDto> {
+    return (await this._vehicleService.createVehicle(dto, creator))?.toDto();
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: VehicleDto,
-    description: 'edited ArchiveLocation',
+    description: 'edited item',
   })
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
-  editOne(
+  @UseGuards(AuthGuard, RolesGuard)
+  editById(
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
-    @Body() updateArchiveLocationDto: VehicleUpdateDto,
+    @Body() updateDto: VehicleUpdateDto,
+    @AuthUser() editor: UserEntity,
   ): Promise<VehicleDto> {
-    return this._vehicleService.updateVehicle(id, updateArchiveLocationDto);
+    return this._vehicleService.updateVehicle(id, updateDto, editor);
   }
 
   @Delete(':id')
-  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: VehicleDto,
-    description: 'deleted ArchiveLocation',
+    description: 'deleted item',
   })
-  delete(
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @UseGuards(AuthGuard, RolesGuard)
+  deleteById(
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
+    @AuthUser() editor: UserEntity,
   ): Promise<VehicleDto> {
-    return this._vehicleService.deleteVehicle(id);
+    return this._vehicleService.deleteVehicle(id, editor);
   }
 }
