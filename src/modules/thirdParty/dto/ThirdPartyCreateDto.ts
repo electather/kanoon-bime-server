@@ -1,6 +1,6 @@
 'use strict';
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -8,6 +8,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   Min,
@@ -56,6 +57,7 @@ export class ThirdPartyCreateDto {
 
   @IsString({ message: 'error.must-be-string' })
   @IsUUID('4', { message: 'error.must-be-uuid' })
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   attachmentId: string;
 }

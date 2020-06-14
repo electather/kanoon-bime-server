@@ -27,13 +27,13 @@ export class BodyInsuranceEntity extends AbstractEntity<BodyInsuranceDto> {
   @ManyToOne(() => VehicleEntity, (item) => item.bodyInsurance)
   vehicle: VehicleEntity;
 
-  @ManyToOne(() => VehicleEntity)
+  @ManyToOne(() => VehicleEntity, { eager: true })
   insurer: UserEntity;
 
   @Column({ type: 'enum', enum: InsuranceType, nullable: false })
   insurance: InsuranceType;
 
-  @ManyToOne(() => FileEntity, { nullable: false })
+  @ManyToOne(() => FileEntity, { nullable: true })
   attachment: FileEntity;
 
   dtoClass = BodyInsuranceDto;

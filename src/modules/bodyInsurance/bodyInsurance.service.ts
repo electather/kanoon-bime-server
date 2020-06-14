@@ -29,7 +29,7 @@ export class BodyInsuranceService {
    */
   async findOne(id: string): Promise<BodyInsuranceEntity> {
     const bodyInsurance = await this._bodyInsuranceRepository.findOne(id, {
-      relations: ['issuer'],
+      relations: ['insurer', 'attachment', 'vehicle'],
     });
     if (!bodyInsurance) {
       throw new NotFoundException();
@@ -51,7 +51,10 @@ export class BodyInsuranceService {
       pageOptionsDto.creationDateMax
     ) {
       where.startDate = LessThanOrEqual(pageOptionsDto.creationDateMax);
-    } else {
+    } else if (
+      pageOptionsDto.creationDateMin &&
+      pageOptionsDto.creationDateMax
+    ) {
       where.startDate = Between(
         pageOptionsDto.creationDateMin,
         pageOptionsDto.creationDateMax,
@@ -61,7 +64,7 @@ export class BodyInsuranceService {
       where.endDate = MoreThanOrEqual(pageOptionsDto.expiryDateMin);
     } else if (!pageOptionsDto.expiryDateMin && pageOptionsDto.expiryDateMax) {
       where.endDate = LessThanOrEqual(pageOptionsDto.expiryDateMax);
-    } else {
+    } else if (pageOptionsDto.expiryDateMin && pageOptionsDto.expiryDateMax) {
       where.endDate = Between(
         pageOptionsDto.expiryDateMin,
         pageOptionsDto.expiryDateMax,

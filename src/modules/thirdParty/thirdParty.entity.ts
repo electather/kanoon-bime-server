@@ -28,13 +28,13 @@ export class ThirdPartyEntity extends AbstractEntity<ThirdPartyDto> {
   @ManyToOne(() => VehicleEntity, (item) => item.tpi)
   vehicle: VehicleEntity;
 
-  @ManyToOne(() => VehicleEntity)
+  @ManyToOne(() => UserEntity)
   insurer: UserEntity;
 
   @Column({ type: 'enum', enum: InsuranceType, nullable: false })
   insurance: InsuranceType;
 
-  @ManyToOne(() => FileEntity, { nullable: false })
+  @ManyToOne(() => FileEntity, { nullable: true })
   attachment: FileEntity;
 
   dtoClass = ThirdPartyDto;

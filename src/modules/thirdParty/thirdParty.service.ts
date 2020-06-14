@@ -26,7 +26,9 @@ export class ThirdPartyService {
    * Find single thirdParty
    */
   async findOne(id: string): Promise<ThirdPartyEntity> {
-    const thirdParty = await this._thirdPartyRepository.findOne(id);
+    const thirdParty = await this._thirdPartyRepository.findOne(id, {
+      relations: ['insurer', 'attachment', 'vehicle'],
+    });
     if (!thirdParty) {
       throw new NotFoundException();
     }

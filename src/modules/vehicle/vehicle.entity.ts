@@ -25,7 +25,7 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
   @Column({ unique: true, nullable: false })
   engineNumber: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ unique: true, nullable: true })
   chassisNumber: string;
 
   @Column({ nullable: true })
@@ -43,12 +43,6 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
   @Column({ nullable: true })
   payroll?: string;
 
-  @Column({ nullable: true })
-  melliCardFront?: string;
-
-  @Column({ nullable: true })
-  melliCardBack?: string;
-
   @OneToMany(() => ThirdPartyEntity, (item) => item.vehicle, { cascade: true })
   tpi?: ThirdPartyEntity[];
 
@@ -57,7 +51,7 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
   })
   bodyInsurance?: BodyInsuranceEntity[];
 
-  @ManyToOne(() => FileEntity, { nullable: false })
+  @ManyToOne(() => FileEntity, { nullable: true })
   attachment: FileEntity;
 
   dtoClass = VehicleDto;

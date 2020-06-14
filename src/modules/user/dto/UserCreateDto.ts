@@ -50,16 +50,19 @@ export class UserCreateDTO {
 
   @IsString()
   @IsUUID('4')
+  @IsOptional()
   @ApiPropertyOptional()
   readonly melliCardScanFrontId?: string;
 
   @IsString()
   @IsUUID('4')
+  @IsOptional()
   @ApiPropertyOptional()
   readonly melliCardScanBackId?: string;
 
   @IsString()
   @IsUUID('4')
+  @IsOptional()
   @ApiPropertyOptional()
   readonly payrollScanId?: string;
 }

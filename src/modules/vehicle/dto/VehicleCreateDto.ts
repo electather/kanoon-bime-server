@@ -45,37 +45,43 @@ export class VehicleCreateDto {
   @IsString({ message: 'error.string' })
   @IsNotEmpty({ message: 'error.empty' })
   @Length(4, 20)
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   chassisNumber: string;
 
   @IsNumber(undefined, { message: 'error.number' })
   @Min(10)
   @Max(99)
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   plateFirstTwoNumbers: number;
 
   @IsNumber(undefined, { message: 'error.number' })
   @Min(1)
   @Max(31)
   @Type(() => Number)
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   plateLetter: number;
 
   @IsNumber(undefined, { message: 'error.number' })
   @Min(100)
   @Max(999)
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   plateLastThreeNumbers: number;
 
   @IsNumber(undefined, { message: 'error.number' })
   @Min(0)
   @Max(99)
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   plateIRNumber: number;
 
   @IsString({ message: 'error.string' })
   @IsNotEmpty({ message: 'error.empty' })
   @IsUUID('4')
-  @ApiProperty()
+  @IsOptional()
+  @ApiPropertyOptional()
   attachmentId: string;
 }
