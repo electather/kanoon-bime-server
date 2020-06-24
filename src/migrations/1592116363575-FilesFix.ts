@@ -50,7 +50,7 @@ export class FilesFix1592116363575 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "body-insurance" 
       ADD CONSTRAINT "FK_377a28e8a6bb46bed23a6f23696" 
-      FOREIGN KEY ("insurer_id") REFERENCES "vehicles"("id") 
+      FOREIGN KEY ("insurer_id") REFERENCES "users"("id") 
       ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
   }
