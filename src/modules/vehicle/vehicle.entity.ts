@@ -54,5 +54,11 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
   @ManyToOne(() => FileEntity, { nullable: true })
   attachment: FileEntity;
 
+  @ManyToOne(() => UserEntity, { nullable: true })
+  creator?: UserEntity;
+
+  @Column({ nullable: true })
+  creatorId?: string;
+
   dtoClass = VehicleDto;
 }

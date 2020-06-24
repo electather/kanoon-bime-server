@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
 import { DeepPartial, FindConditions, FindOneOptions, Like } from 'typeorm';
 
+import { RoleType } from '../../common/constants/role-type';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserEntity } from '../user/user.entity';
 import { VehicleCreateDto } from './dto/VehicleCreateDto';
@@ -37,8 +42,8 @@ export class VehicleService {
     if (pageOptionsDto.q) {
       where.ownerLastName = Like(`%${pageOptionsDto.q}%`);
     }
-    if (pageOptionsDto.chassisNumber) {
-      where.chassisNumber = Like(`%${pageOptionsDto.chassisNumber}%`);
+    if (pageOptionsDto.engineNumber) {
+      where.engineNumber = Like(`%${pageOptionsDto.engineNumber}%`);
     }
     const [
       vehicles,
@@ -61,7 +66,7 @@ export class VehicleService {
 
   async createVehicle(
     createDto: VehicleCreateDto,
-    _creator?: UserEntity,
+    creator?: UserEntity,
   ): Promise<VehicleEntity> {
     const create: DeepPartial<VehicleEntity> = {
       ...createDto,
@@ -74,12 +79,15 @@ export class VehicleService {
       create.attachment = { id: createDto.attachmentId };
       delete (<any>create).attachmentId;
     }
-    const vehicle = this._vehicleRepository.create(create);
+    const vehicle = this._vehicleRepository.create({ ...create, creator });
     return this._vehicleRepository.save(vehicle);
   }
 
-  async deleteVehicle(id: string, _creator?: UserEntity): Promise<VehicleDto> {
+  async deleteVehicle(id: string, creator: UserEntity): Promise<VehicleDto> {
     const found = await this.findOne({ id });
+    if (found.creatorId !== creator.id || creator?.role !== RoleType.ADMIN) {
+      throw new UnauthorizedException();
+    }
     const vehicle = await this._vehicleRepository.delete(id);
     if (vehicle.affected === 0) {
       throw new NotFoundException();
@@ -90,8 +98,12 @@ export class VehicleService {
   async updateVehicle(
     id: string,
     updatePlanDto: VehicleUpdateDto,
-    _creator?: UserEntity,
+    creator: UserEntity,
   ): Promise<VehicleDto> {
+    const found = await this.findOne({ id });
+    if (found.creatorId !== creator.id || creator?.role !== RoleType.ADMIN) {
+      throw new UnauthorizedException();
+    }
     const update: DeepPartial<VehicleEntity> = {
       ...updatePlanDto,
     };
@@ -103,7 +115,6 @@ export class VehicleService {
       update.attachment = { id: updatePlanDto.attachmentId };
       delete (<any>update).attachmentId;
     }
-
     const updated = await this._vehicleRepository.update(
       id,
       pickBy(update, identity),

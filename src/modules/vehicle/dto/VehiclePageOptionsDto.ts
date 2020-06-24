@@ -7,5 +7,5 @@ export class VehiclesPageOptionsDto extends PageOptionsDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  readonly chassisNumber?: string;
+  readonly engineNumber?: string;
 }
