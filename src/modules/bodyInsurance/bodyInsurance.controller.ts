@@ -11,6 +11,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -21,9 +22,12 @@ import {
 } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
+import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RolesGuard } from '../../guards/roles.guard';
+import { AuthUserInterceptor } from '../../interceptors/auth-user-interceptor.service';
+import { UserEntity } from '../user/user.entity';
 import { BodyInsuranceService } from './bodyInsurance.service';
 import { BodyInsuranceCreateDto } from './dto/BodyInsuranceCreateDto';
 import { BodyInsuranceDto } from './dto/BodyInsuranceDto';
@@ -35,6 +39,7 @@ import { BodyInsuranceUpdateDto } from './dto/BodyInsuranceUpdateDto';
 @ApiTags('body-insurance')
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth()
+@UseInterceptors(AuthUserInterceptor)
 export class BodyInsuranceController {
   constructor(private _bodyInsuranceService: BodyInsuranceService) {}
 
@@ -87,8 +92,11 @@ export class BodyInsuranceController {
     type: BodyInsuranceDto,
     description: 'created object',
   })
-  create(@Body() createDto: BodyInsuranceCreateDto): Promise<BodyInsuranceDto> {
-    return this._bodyInsuranceService.createBodyInsurance(createDto);
+  create(
+    @Body() createDto: BodyInsuranceCreateDto,
+    @AuthUser() creator: UserEntity,
+  ): Promise<BodyInsuranceDto> {
+    return this._bodyInsuranceService.createBodyInsurance(createDto, creator);
   }
 
   @Put(':id')
@@ -102,8 +110,13 @@ export class BodyInsuranceController {
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
     @Body() updateDto: BodyInsuranceUpdateDto,
+    @AuthUser() creator: UserEntity,
   ): Promise<BodyInsuranceDto> {
-    return this._bodyInsuranceService.updateBodyInsurance(id, updateDto);
+    return this._bodyInsuranceService.updateBodyInsurance(
+      id,
+      updateDto,
+      creator,
+    );
   }
 
   @Delete(':id')
@@ -116,7 +129,8 @@ export class BodyInsuranceController {
   delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
+    @AuthUser() creator: UserEntity,
   ): Promise<BodyInsuranceDto> {
-    return this._bodyInsuranceService.deleteBodyInsurance(id);
+    return this._bodyInsuranceService.deleteBodyInsurance(id, creator);
   }
 }

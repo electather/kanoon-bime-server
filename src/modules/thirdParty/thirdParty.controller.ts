@@ -13,6 +13,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -23,9 +24,12 @@ import {
 } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
+import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RolesGuard } from '../../guards/roles.guard';
+import { AuthUserInterceptor } from '../../interceptors/auth-user-interceptor.service';
+import { UserEntity } from '../user/user.entity';
 import { ThirdPartyCreateDto } from './dto/ThirdPartyCreateDto';
 import { ThirdPartyDto } from './dto/ThirdPartyDto';
 import { ThirdPartyPageDto } from './dto/ThirdPartyPageDto';
@@ -37,6 +41,7 @@ import { ThirdPartyService } from './thirdParty.service';
 @ApiTags('third-party')
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth()
+@UseInterceptors(AuthUserInterceptor)
 export class ThirdPartyController {
   constructor(private _thirdPartyService: ThirdPartyService) {}
 
@@ -79,8 +84,12 @@ export class ThirdPartyController {
   })
   createArchiveLocation(
     @Body() createArchiveLocationDto: ThirdPartyCreateDto,
+    @AuthUser() creator: UserEntity,
   ): Promise<ThirdPartyDto> {
-    return this._thirdPartyService.createThirdParty(createArchiveLocationDto);
+    return this._thirdPartyService.createThirdParty(
+      createArchiveLocationDto,
+      creator,
+    );
   }
 
   @Put(':id')
@@ -94,10 +103,12 @@ export class ThirdPartyController {
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
     @Body() updateArchiveLocationDto: ThirdPartyUpdateDto,
+    @AuthUser() creator: UserEntity,
   ): Promise<ThirdPartyDto> {
     return this._thirdPartyService.updateThirdParty(
       id,
       updateArchiveLocationDto,
+      creator,
     );
   }
 
@@ -111,7 +122,8 @@ export class ThirdPartyController {
   delete(
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
+    @AuthUser() creator: UserEntity,
   ): Promise<ThirdPartyDto> {
-    return this._thirdPartyService.deleteThirdParty(id);
+    return this._thirdPartyService.deleteThirdParty(id, creator);
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
 import {
   Between,
@@ -9,7 +13,9 @@ import {
   MoreThanOrEqual,
 } from 'typeorm';
 
+import { RoleType } from '../../common/constants/role-type';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
+import { UserEntity } from '../user/user.entity';
 import { BodyInsuranceEntity } from './bodyInsurance.entity';
 import { BodyInsuranceRepository } from './bodyInsurance.repository';
 import { BodyInsuranceCreateDto } from './dto/BodyInsuranceCreateDto';
@@ -91,6 +97,7 @@ export class BodyInsuranceService {
 
   async createBodyInsurance(
     bodyInsuranceCreateDto: BodyInsuranceCreateDto,
+    creator: UserEntity,
   ): Promise<BodyInsuranceDto> {
     const create: DeepPartial<BodyInsuranceEntity> = {
       ...bodyInsuranceCreateDto,
@@ -108,12 +115,21 @@ export class BodyInsuranceService {
       delete (<any>create).attachmentId;
     }
 
-    const bodyInsurance = this._bodyInsuranceRepository.create(create);
+    const bodyInsurance = this._bodyInsuranceRepository.create({
+      ...create,
+      creator,
+    });
     return (await this._bodyInsuranceRepository.save(bodyInsurance)).toDto();
   }
 
-  async deleteBodyInsurance(id: string): Promise<BodyInsuranceDto> {
+  async deleteBodyInsurance(
+    id: string,
+    creator: UserEntity,
+  ): Promise<BodyInsuranceDto> {
     const found = await this.findOne(id);
+    if (found.creatorId !== creator.id || creator?.role !== RoleType.ADMIN) {
+      throw new UnauthorizedException();
+    }
     const bodyInsurance = await this._bodyInsuranceRepository.delete(id);
     if (bodyInsurance.affected === 0) {
       throw new NotFoundException();
@@ -124,7 +140,13 @@ export class BodyInsuranceService {
   async updateBodyInsurance(
     id: string,
     updatePlanDto: BodyInsuranceUpdateDto,
+    creator: UserEntity,
   ): Promise<BodyInsuranceDto> {
+    const found = await this.findOne(id);
+    if (found.creatorId !== creator.id || creator?.role !== RoleType.ADMIN) {
+      throw new UnauthorizedException();
+    }
+
     const update: DeepPartial<BodyInsuranceEntity> = {
       ...updatePlanDto,
     };

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
 import {
   Between,
@@ -9,7 +13,9 @@ import {
   MoreThanOrEqual,
 } from 'typeorm';
 
+import { RoleType } from '../../common/constants/role-type';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
+import { UserEntity } from '../user/user.entity';
 import { ThirdPartyCreateDto } from './dto/ThirdPartyCreateDto';
 import { ThirdPartyDto } from './dto/ThirdPartyDto';
 import { ThirdPartyPageDto } from './dto/ThirdPartyPageDto';
@@ -89,6 +95,7 @@ export class ThirdPartyService {
 
   async createThirdParty(
     createDto: ThirdPartyCreateDto,
+    creator: UserEntity,
   ): Promise<ThirdPartyDto> {
     const create: DeepPartial<ThirdPartyEntity> = {
       ...createDto,
@@ -106,12 +113,21 @@ export class ThirdPartyService {
       delete (<any>create).attachmentId;
     }
 
-    const thirdParty = this._thirdPartyRepository.create(create);
+    const thirdParty = this._thirdPartyRepository.create({
+      ...create,
+      creator,
+    });
     return (await this._thirdPartyRepository.save(thirdParty)).toDto();
   }
 
-  async deleteThirdParty(id: string): Promise<ThirdPartyDto> {
+  async deleteThirdParty(
+    id: string,
+    creator: UserEntity,
+  ): Promise<ThirdPartyDto> {
     const found = await this.findOne(id);
+    if (found.creatorId !== creator.id || creator?.role !== RoleType.ADMIN) {
+      throw new UnauthorizedException();
+    }
     const thirdParty = await this._thirdPartyRepository.delete(id);
     if (thirdParty.affected === 0) {
       throw new NotFoundException();
@@ -122,7 +138,13 @@ export class ThirdPartyService {
   async updateThirdParty(
     id: string,
     updatePlanDto: ThirdPartyUpdateDto,
+    creator: UserEntity,
   ): Promise<ThirdPartyDto> {
+    const found = await this.findOne(id);
+    if (found.creatorId !== creator.id || creator?.role !== RoleType.ADMIN) {
+      throw new UnauthorizedException();
+    }
+
     const update: DeepPartial<ThirdPartyEntity> = {
       ...updatePlanDto,
     };

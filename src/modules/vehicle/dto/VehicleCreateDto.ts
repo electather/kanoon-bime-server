@@ -1,7 +1,6 @@
 'use strict';
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
@@ -14,73 +13,71 @@ import {
 } from 'class-validator';
 
 export class VehicleCreateDto {
-  @IsString({ message: 'error.string' })
-  @IsNotEmpty({ message: 'error.empty' })
-  @IsUUID('4')
+  @IsString({ message: 'error.vehicle.issuer.string' })
+  @IsUUID('4', { message: 'error.vehicle.issuer.uuidV4' })
   @ApiProperty()
   issuerId: string;
 
-  @IsString({ message: 'error.string' })
-  @IsNotEmpty({ message: 'error.empty' })
+  @IsString({ message: 'error.vehicle.ownerName.string' })
+  @IsNotEmpty({ message: 'error.vehicle.ownerName.empty' })
   @ApiProperty()
   ownerName: string;
 
-  @IsString({ message: 'error.string' })
-  @IsNotEmpty({ message: 'error.empty' })
+  @IsString({ message: 'error.vehicle.ownerLastName.string' })
+  @IsNotEmpty({ message: 'error.vehicle.ownerLastName.empty' })
   @ApiProperty()
   ownerLastName: string;
 
-  @IsString({ message: 'error.string' })
-  @IsNotEmpty({ message: 'error.empty' })
+  @IsString({ message: 'error.vehicle.address.string' })
+  @IsNotEmpty({ message: 'error.vehicle.address.empty' })
   @IsOptional()
   @ApiPropertyOptional()
   address: string;
 
-  @IsString({ message: 'error.string' })
-  @IsNotEmpty({ message: 'error.empty' })
-  @Length(4, 17)
+  @IsString({ message: 'error.vehicle.engineNumber.string' })
+  @Length(4, 20, { message: 'error.vehicle.engineNumber.length' })
   @ApiProperty()
   engineNumber: string;
 
-  @IsString({ message: 'error.string' })
-  @IsNotEmpty({ message: 'error.empty' })
-  @Length(4, 20)
+  @IsString({ message: 'error.vehicle.chassisNumber.string' })
+  @Length(4, 20, { message: 'error.vehicle.chassisNumber.length' })
   @IsOptional()
   @ApiPropertyOptional()
   chassisNumber: string;
 
-  @IsNumber(undefined, { message: 'error.number' })
-  @Min(10)
-  @Max(99)
+  @IsNumber(undefined, { message: 'error.vehicle.plateFirstTwoNumbers.string' })
+  @Min(10, { message: 'error.vehicle.plateFirstTwoNumbers.length' })
+  @Max(99, { message: 'error.vehicle.plateFirstTwoNumbers.length' })
   @IsOptional()
   @ApiPropertyOptional()
   plateFirstTwoNumbers: number;
 
-  @IsNumber(undefined, { message: 'error.number' })
-  @Min(1)
-  @Max(31)
-  @Type(() => Number)
+  @IsNumber(undefined, { message: 'error.vehicle.plateLetter.string' })
+  @Min(1, { message: 'error.vehicle.plateLetter.length' })
+  @Max(31, { message: 'error.vehicle.plateLetter.length' })
   @IsOptional()
   @ApiPropertyOptional()
   plateLetter: number;
 
-  @IsNumber(undefined, { message: 'error.number' })
-  @Min(100)
-  @Max(999)
+  @IsNumber(undefined, {
+    message: 'error.vehicle.plateLastThreeNumbers.string',
+  })
+  @Min(100, { message: 'error.vehicle.plateLastThreeNumbers.length' })
+  @Max(999, { message: 'error.vehicle.plateLastThreeNumbers.length' })
   @IsOptional()
   @ApiPropertyOptional()
   plateLastThreeNumbers: number;
 
-  @IsNumber(undefined, { message: 'error.number' })
-  @Min(0)
-  @Max(99)
+  @IsNumber(undefined, {
+    message: 'error.vehicle.plateIRNumber.string',
+  })
+  @Min(0, { message: 'error.vehicle.plateIRNumber.length' })
+  @Max(99, { message: 'error.vehicle.plateIRNumber.length' })
   @IsOptional()
   @ApiPropertyOptional()
   plateIRNumber: number;
 
-  @IsString({ message: 'error.string' })
-  @IsNotEmpty({ message: 'error.empty' })
-  @IsUUID('4')
+  @IsUUID('4', { message: 'error.vehicle.attachmentId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   attachmentId: string;

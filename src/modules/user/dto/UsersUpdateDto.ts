@@ -19,33 +19,39 @@ import { UserInfoUpdateDto } from '../../userInfo/dto/UserInfoUpdateDto';
 
 export class UserUpdateDto {
   @Trim()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.user.firstName.string' })
+  @IsNotEmpty({ message: 'error.user.firstName.empty' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly firstName: string;
 
   @Trim()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.user.lastName.string' })
+  @IsNotEmpty({ message: 'error.user.lastName.empty' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly lastName: string;
 
-  @IsString()
-  @MinLength(6)
+  @IsString({ message: 'error.user.password.string' })
+  @MinLength(6, { message: 'error.user.password.length' })
   @IsOptional()
   @ApiPropertyOptional({ minLength: 6 })
   readonly password: string;
 
-  @IsCellNumber({ message: 'invalid phone number' })
-  @IsString()
+  @IsCellNumber({ message: 'error.user.phone.valid' })
+  @IsString({ message: 'error.user.phone.string' })
   @ToEnglishDigits()
   @IsOptional()
   @ApiPropertyOptional()
   readonly phone: string;
 
-  @IsUUID('4')
+  @IsString({ message: 'error.user.address.string' })
+  @IsNotEmpty({ message: 'error.user.address.empty' })
+  @IsOptional()
+  @ApiPropertyOptional()
+  readonly address?: string;
+
+  @IsUUID('4', { message: 'error.user.avatarId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly avatarId: string;

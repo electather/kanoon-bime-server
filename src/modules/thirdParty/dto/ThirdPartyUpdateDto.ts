@@ -17,54 +17,51 @@ import {
 import { InsuranceType } from '../../../common/constants/insurance-type';
 
 export class ThirdPartyUpdateDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.tpi.bimeNumber.string' })
+  @IsNotEmpty({ message: 'error.tpi.bimeNumber.empty' })
   @IsOptional()
   @ApiPropertyOptional()
   bimeNumber: string;
 
-  @IsDate()
+  @IsDate({ message: 'error.tpi.startDate.date' })
   @Type(() => Date)
   @IsOptional()
   @ApiPropertyOptional()
   startDate: string;
 
-  @IsDate()
+  @IsDate({ message: 'error.tpi.endDate.date' })
   @Type(() => Date)
   @IsOptional()
   @ApiPropertyOptional()
   endDate: string;
 
-  @IsBoolean()
+  @IsBoolean({ message: 'error.tpi.isCash.boolean' })
   @IsOptional()
   @ApiPropertyOptional()
   isCash: boolean;
 
-  @IsNumber()
-  @Min(0)
+  @IsNumber(undefined, { message: 'error.tpi.fullAmount.number' })
+  @Min(0, { message: 'error.tpi.fullAmount.min' })
   @IsOptional()
   @ApiPropertyOptional()
   fullAmount: number;
 
-  @IsString()
-  @IsUUID('4')
+  @IsUUID('4', { message: 'error.tpi.insurerId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   insurerId: string;
 
-  @IsString()
-  @IsUUID('4')
+  @IsUUID('4', { message: 'error.tpi.vehicleId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   vehicleId: string;
 
-  @IsEnum(InsuranceType)
+  @IsEnum(InsuranceType, { message: 'error.tpi.insurance.enum' })
   @IsOptional()
   @ApiPropertyOptional({ enum: InsuranceType })
   insurance?: InsuranceType;
 
-  @IsString()
-  @IsUUID('4')
+  @IsUUID('4', { message: 'error.tpi.attachmentId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   attachmentId?: string;

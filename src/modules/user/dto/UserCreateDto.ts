@@ -14,54 +14,54 @@ import {
 
 export class UserCreateDTO {
   @Trim()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.user.firstName.string' })
+  @IsNotEmpty({ message: 'error.user.firstName.empty' })
   @ApiProperty()
   readonly firstName: string;
 
   @Trim()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.user.lastName.string' })
+  @IsNotEmpty({ message: 'error.user.lastName.empty' })
   @ApiProperty()
   readonly lastName: string;
 
-  @IsString()
+  @IsString({ message: 'error.user.melliCode.string' })
   @ToEnglishDigits()
-  @IsMelliCode({ message: 'not a valid melliCode' })
+  @IsMelliCode({ message: 'error.user.melliCode.valid' })
   @ApiProperty()
   readonly melliCode: string;
 
-  @IsCellNumber({ message: 'invalid phone number' })
-  @IsString()
+  @IsCellNumber({ message: 'error.user.phone.valid' })
+  @IsString({ message: 'error.user.phone.string' })
   @ToEnglishDigits()
   @ApiProperty()
   readonly phone: string;
 
-  @IsUUID('4')
+  @IsUUID('4', { message: 'error.user.avatarId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly avatarId: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'error.user.address.string' })
+  @IsNotEmpty({ message: 'error.user.address.empty' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly address?: string;
 
-  @IsString()
-  @IsUUID('4')
+  @IsString({ message: 'error.user.melliCardScanFrontId.string' })
+  @IsUUID('4', { message: 'error.user.melliCardScanFrontId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly melliCardScanFrontId?: string;
 
-  @IsString()
-  @IsUUID('4')
+  @IsString({ message: 'error.user.melliCardScanBackId.string' })
+  @IsUUID('4', { message: 'error.user.melliCardScanBackId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly melliCardScanBackId?: string;
 
-  @IsString()
-  @IsUUID('4')
+  @IsString({ message: 'error.user.payrollScanId.string' })
+  @IsUUID('4', { message: 'error.user.payrollScanId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
   readonly payrollScanId?: string;

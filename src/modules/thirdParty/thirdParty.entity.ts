@@ -37,5 +37,11 @@ export class ThirdPartyEntity extends AbstractEntity<ThirdPartyDto> {
   @ManyToOne(() => FileEntity, { nullable: true })
   attachment: FileEntity;
 
+  @ManyToOne(() => UserEntity, { nullable: true })
+  creator?: UserEntity;
+
+  @Column({ nullable: true })
+  creatorId?: string;
+
   dtoClass = ThirdPartyDto;
 }

@@ -29,6 +29,9 @@ export class ThirdPartyDto extends AbstractDto {
   @ApiPropertyOptional({ type: () => UserDto })
   insurer: UserDto;
 
+  @ApiPropertyOptional({ type: () => UserDto })
+  creator?: UserDto;
+
   @ApiPropertyOptional({ type: () => VehicleDto })
   vehicle: VehicleDto;
 
@@ -49,5 +52,6 @@ export class ThirdPartyDto extends AbstractDto {
     this.vehicle = entity.vehicle?.toDto();
     this.insurance = entity.insurance;
     this.attachment = entity.attachment?.toDto();
+    this.creator = entity.creator?.toDto();
   }
 }
