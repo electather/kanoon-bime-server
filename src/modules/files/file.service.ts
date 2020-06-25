@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { BucketTypes } from '../../common/constants/bucket-type';
 import { IFile } from '../../interfaces/IFile';
-import { AwsS3Service } from '../../shared/services/aws-s3.service';
+import { FileWriteService } from '../../shared/services/files.service';
 import { AuthService } from '../auth/auth.service';
 import { CreateFileDto } from './dto/FileCreateDto';
 import { FileDto } from './dto/FileDto';
@@ -13,7 +12,7 @@ import { FileRepository } from './file.repository';
 export class FileService {
   constructor(
     private readonly _fileRepository: FileRepository,
-    private readonly _awsService: AwsS3Service,
+    private readonly _fileService: FileWriteService,
   ) {}
 
   async getFile(id: string): Promise<FileEntity> {
@@ -28,10 +27,7 @@ export class FileService {
     createFileDto: CreateFileDto,
     uploadedFile: IFile,
   ): Promise<FileEntity> {
-    const uploadFile = await this._awsService.uploadImage(
-      uploadedFile,
-      BucketTypes.COMMON,
-    );
+    const uploadFile = await this._fileService.writeFile(uploadedFile);
 
     const user = AuthService.getAuthUser();
     const file = this._fileRepository.create({

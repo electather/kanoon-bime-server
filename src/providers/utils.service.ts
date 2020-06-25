@@ -1,5 +1,7 @@
 import * as bcrypt from 'bcrypt';
+import { promises as fs } from 'fs';
 import * as _ from 'lodash';
+import * as path from 'path';
 
 export class UtilsService {
   /**
@@ -58,5 +60,10 @@ export class UtilsService {
    */
   static validateHash(password: string, hash?: string): Promise<boolean> {
     return bcrypt.compare(password, hash || '');
+  }
+
+  static async ensureDirectoryExistence(filePath: string): Promise<void> {
+    const dirname = path.dirname(filePath);
+    await fs.mkdir(dirname, { recursive: true });
   }
 }

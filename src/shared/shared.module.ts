@@ -1,8 +1,8 @@
 import { Global, HttpModule, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
-import { AwsS3Service } from './services/aws-s3.service';
 import { ConfigService } from './services/config.service';
+import { FileWriteService } from './services/files.service';
 import { GeneratorService } from './services/generator.service';
 import { SmsService } from './services/sms.service';
 import { ValidatorService } from './services/validator.service';
@@ -10,7 +10,7 @@ import { ValidatorService } from './services/validator.service';
 const providers = [
   ConfigService,
   ValidatorService,
-  AwsS3Service,
+  FileWriteService,
   GeneratorService,
   SmsService,
 ];
