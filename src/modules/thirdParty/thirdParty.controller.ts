@@ -34,6 +34,7 @@ import { ThirdPartyCreateDto } from './dto/ThirdPartyCreateDto';
 import { ThirdPartyDto } from './dto/ThirdPartyDto';
 import { ThirdPartyPageDto } from './dto/ThirdPartyPageDto';
 import { ThirdPartyPageOptionsDto } from './dto/ThirdPartyPageOptionsDto';
+import { ThirdPartyStatOptionsDto } from './dto/ThirdPartyStatOptionsDto';
 import { ThirdPartyUpdateDto } from './dto/ThirdPartyUpdateDto';
 import { ThirdPartyService } from './thirdParty.service';
 
@@ -45,7 +46,7 @@ import { ThirdPartyService } from './thirdParty.service';
 export class ThirdPartyController {
   constructor(private _thirdPartyService: ThirdPartyService) {}
 
-  @Get(':id')
+  @Get('info/:id')
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
@@ -60,6 +61,28 @@ export class ThirdPartyController {
     return (await this._thirdPartyService.findOne(id))?.toDto();
   }
 
+  @Get('stats/daily')
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @HttpCode(HttpStatus.OK)
+  async getDailyStats(
+    @Query(new ValidationPipe({ transform: true }))
+    pageOptionsDto: ThirdPartyStatOptionsDto,
+    @AuthUser() role: UserEntity,
+  ) {
+    return this._thirdPartyService.getDailyStats(pageOptionsDto, role);
+  }
+
+  @Get('stats/total')
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @HttpCode(HttpStatus.OK)
+  async getTotalStats(
+    @Query(new ValidationPipe({ transform: true }))
+    pageOptionsDto: ThirdPartyStatOptionsDto,
+    @AuthUser() role: UserEntity,
+  ) {
+    return this._thirdPartyService.getTotalStats(pageOptionsDto, role);
+  }
+
   @Get()
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @HttpCode(HttpStatus.OK)
@@ -71,8 +94,9 @@ export class ThirdPartyController {
   getList(
     @Query(new ValidationPipe({ transform: true }))
     pageOptionsDto: ThirdPartyPageOptionsDto,
+    @AuthUser() creator: UserEntity,
   ): Promise<ThirdPartyPageDto> {
-    return this._thirdPartyService.getList(pageOptionsDto);
+    return this._thirdPartyService.getList(pageOptionsDto, creator);
   }
 
   @Post()

@@ -45,7 +45,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @JoinColumn()
   info?: UserInfoEntity;
 
-  @ManyToOne(() => UserEntity, { nullable: true })
+  @ManyToOne(() => UserEntity, { nullable: true, cascade: true })
   creator?: UserEntity;
 
   dtoClass = UserDto;

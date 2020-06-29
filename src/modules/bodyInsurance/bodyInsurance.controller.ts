@@ -33,6 +33,7 @@ import { BodyInsuranceCreateDto } from './dto/BodyInsuranceCreateDto';
 import { BodyInsuranceDto } from './dto/BodyInsuranceDto';
 import { BodyInsurancePageDto } from './dto/BodyInsurancePageDto';
 import { BodyInsurancePageOptionsDto } from './dto/BodyInsurancePageOptionsDto';
+import { BodyInsuranceStatOptionsDto } from './dto/BodyInsuranceStatOptionsDto';
 import { BodyInsuranceUpdateDto } from './dto/BodyInsuranceUpdateDto';
 
 @Controller('body-insurance')
@@ -58,16 +59,26 @@ export class BodyInsuranceController {
     return (await this._bodyInsuranceService.findOne(id))?.toDto();
   }
 
-  @Get('stats')
+  @Get('stats/daily')
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Get stats',
-    type: BodyInsurancePageDto,
-  })
-  async getStats() {
-    return this._bodyInsuranceService.getStats();
+  async getDailyStats(
+    @Query(new ValidationPipe({ transform: true }))
+    pageOptionsDto: BodyInsuranceStatOptionsDto,
+    @AuthUser() role: UserEntity,
+  ) {
+    return this._bodyInsuranceService.getDailyStats(pageOptionsDto, role);
+  }
+
+  @Get('stats/total')
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @HttpCode(HttpStatus.OK)
+  async getTotalStats(
+    @Query(new ValidationPipe({ transform: true }))
+    pageOptionsDto: BodyInsuranceStatOptionsDto,
+    @AuthUser() role: UserEntity,
+  ) {
+    return this._bodyInsuranceService.getTotalStats(pageOptionsDto, role);
   }
 
   @Get()
@@ -81,8 +92,9 @@ export class BodyInsuranceController {
   getList(
     @Query(new ValidationPipe({ transform: true }))
     pageOptionsDto: BodyInsurancePageOptionsDto,
+    @AuthUser() creator: UserEntity,
   ): Promise<BodyInsurancePageDto> {
-    return this._bodyInsuranceService.getList(pageOptionsDto);
+    return this._bodyInsuranceService.getList(pageOptionsDto, creator);
   }
 
   @Post()

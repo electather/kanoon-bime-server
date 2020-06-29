@@ -7,6 +7,7 @@ import { identity, pickBy } from 'lodash';
 import {
   Between,
   DeepPartial,
+  Equal,
   FindConditions,
   LessThanOrEqual,
   Like,
@@ -17,9 +18,12 @@ import { RoleType } from '../../common/constants/role-type';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserEntity } from '../user/user.entity';
 import { ThirdPartyCreateDto } from './dto/ThirdPartyCreateDto';
+import { ThirdPartyDailyStatDto } from './dto/ThirdPartyDailyStatDto';
 import { ThirdPartyDto } from './dto/ThirdPartyDto';
 import { ThirdPartyPageDto } from './dto/ThirdPartyPageDto';
 import { ThirdPartyPageOptionsDto } from './dto/ThirdPartyPageOptionsDto';
+import { ThirdPartyStatOptionsDto } from './dto/ThirdPartyStatOptionsDto';
+import { ThirdPartyTotalStatDto } from './dto/ThirdPartyTotalStatDto';
 import { ThirdPartyUpdateDto } from './dto/ThirdPartyUpdateDto';
 import { ThirdPartyEntity } from './thirdParty.entity';
 import { ThirdPartyRepository } from './thirdParty.repository';
@@ -43,6 +47,7 @@ export class ThirdPartyService {
 
   async getList(
     pageOptionsDto: ThirdPartyPageOptionsDto,
+    creator: UserEntity,
   ): Promise<ThirdPartyPageDto> {
     const where: FindConditions<ThirdPartyEntity> = {};
     if (pageOptionsDto.bimeNumber) {
@@ -74,6 +79,10 @@ export class ThirdPartyService {
         pageOptionsDto.expiryDateMax,
       );
     }
+    if (creator.role === RoleType.KARSHENAS) {
+      where.creatorId = Equal(creator.id);
+    }
+
     const [
       thirdParty,
       thirdPartyCount,
@@ -82,7 +91,7 @@ export class ThirdPartyService {
       take: pageOptionsDto.take,
       skip: pageOptionsDto.skip,
       order: {
-        createdAt: pageOptionsDto.order,
+        endDate: pageOptionsDto.order,
       },
       relations: ['insurer'],
     });
@@ -169,5 +178,49 @@ export class ThirdPartyService {
       throw new NotFoundException();
     }
     return (await this.findOne(id)).toDto();
+  }
+
+  async getDailyStats(options: ThirdPartyStatOptionsDto, user: UserEntity) {
+    const qb = this._thirdPartyRepository
+      .createQueryBuilder('tpi')
+      .select('SUM(tpi.full_amount)', 'totalValue')
+      .addSelect('COUNT(*)', 'count')
+      .addSelect('tpi.start_date::date', 'day')
+      .groupBy('tpi.start_date::date')
+      .orderBy('tpi.start_date::date');
+    if (user.role !== RoleType.ADMIN) {
+      qb.where('tpi.creator_id = :id', {
+        id: user.id,
+      });
+    } else if (options.userId) {
+      qb.where('tpi.creator_id = :id', {
+        id: options.userId,
+      });
+    }
+    const rawResult = await qb.getRawMany();
+    return new ThirdPartyDailyStatDto(rawResult);
+  }
+
+  async getTotalStats(options: ThirdPartyStatOptionsDto, user: UserEntity) {
+    const qb = this._thirdPartyRepository
+      .createQueryBuilder('tpi')
+      .select('SUM(tpi.full_amount)', 'totalValue')
+      .addSelect('COUNT(*)', 'count');
+    if (user.role !== RoleType.ADMIN) {
+      qb.where('tpi.creator_id = :id', {
+        id: user.id,
+      });
+    } else if (options.userId) {
+      qb.where('tpi.creator_id = :id', {
+        id: options.userId,
+      });
+    }
+    const { totalValue, count } = await qb.getRawOne();
+    return new ThirdPartyTotalStatDto(
+      Number(totalValue),
+      Number(count),
+      options.startDateMin,
+      options.startDateMax,
+    );
   }
 }

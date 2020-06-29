@@ -7,6 +7,7 @@ import { identity, pickBy } from 'lodash';
 import {
   Between,
   DeepPartial,
+  Equal,
   FindConditions,
   LessThanOrEqual,
   Like,
@@ -19,9 +20,12 @@ import { UserEntity } from '../user/user.entity';
 import { BodyInsuranceEntity } from './bodyInsurance.entity';
 import { BodyInsuranceRepository } from './bodyInsurance.repository';
 import { BodyInsuranceCreateDto } from './dto/BodyInsuranceCreateDto';
+import { BodyInsuranceDailyStatDto } from './dto/BodyInsuranceDailyStatDto';
 import { BodyInsuranceDto } from './dto/BodyInsuranceDto';
 import { BodyInsurancePageDto } from './dto/BodyInsurancePageDto';
 import { BodyInsurancePageOptionsDto } from './dto/BodyInsurancePageOptionsDto';
+import { BodyInsuranceStatOptionsDto } from './dto/BodyInsuranceStatOptionsDto';
+import { BodyInsuranceTotalStatDto } from './dto/BodyInsuranceTotalStatDto';
 import { BodyInsuranceUpdateDto } from './dto/BodyInsuranceUpdateDto';
 
 @Injectable()
@@ -45,6 +49,7 @@ export class BodyInsuranceService {
 
   async getList(
     pageOptionsDto: BodyInsurancePageOptionsDto,
+    creator: UserEntity,
   ): Promise<BodyInsurancePageDto> {
     const where: FindConditions<BodyInsuranceEntity> = {};
     if (pageOptionsDto.bimeNumber) {
@@ -76,7 +81,9 @@ export class BodyInsuranceService {
         pageOptionsDto.expiryDateMax,
       );
     }
-
+    if (creator.role === RoleType.KARSHENAS) {
+      where.creatorId = Equal(creator.id);
+    }
     const [
       bodyInsurance,
       bodyInsuranceCount,
@@ -85,7 +92,7 @@ export class BodyInsuranceService {
       take: pageOptionsDto.take,
       skip: pageOptionsDto.skip,
       order: {
-        createdAt: pageOptionsDto.order,
+        endDate: pageOptionsDto.order,
       },
     });
     const pageMetaDto = new PageMetaDto({
@@ -172,7 +179,47 @@ export class BodyInsuranceService {
     return (await this.findOne(id)).toDto();
   }
 
-  async getStats() {
-    return null;
+  async getDailyStats(options: BodyInsuranceStatOptionsDto, user: UserEntity) {
+    const qb = this._bodyInsuranceRepository
+      .createQueryBuilder('bii')
+      .select('SUM(bii.full_amount)', 'totalValue')
+      .addSelect('COUNT(*)', 'count')
+      .addSelect('bii.start_date::date', 'day')
+      .groupBy('bii.start_date::date')
+      .orderBy('bii.start_date::date');
+    if (user.role !== RoleType.ADMIN) {
+      qb.where('bii.creator_id = :id', {
+        id: user.id,
+      });
+    } else if (options.userId) {
+      qb.where('bii.creator_id = :id', {
+        id: options.userId,
+      });
+    }
+    const rawResult = await qb.getRawMany();
+    return new BodyInsuranceDailyStatDto(rawResult);
+  }
+
+  async getTotalStats(options: BodyInsuranceStatOptionsDto, user: UserEntity) {
+    const qb = this._bodyInsuranceRepository
+      .createQueryBuilder('bii')
+      .select('SUM(bii.full_amount)', 'totalValue')
+      .addSelect('COUNT(*)', 'count');
+    if (user.role !== RoleType.ADMIN) {
+      qb.where('bii.creator_id = :id', {
+        id: user.id,
+      });
+    } else if (options.userId) {
+      qb.where('bii.creator_id = :id', {
+        id: options.userId,
+      });
+    }
+    const { totalValue, count } = await qb.getRawOne();
+    return new BodyInsuranceTotalStatDto(
+      Number(totalValue),
+      Number(count),
+      options.startDateMin,
+      options.startDateMax,
+    );
   }
 }

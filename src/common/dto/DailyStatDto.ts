@@ -1,0 +1,30 @@
+import { ApiProperty } from '@nestjs/swagger';
+
+export class DailyStatDto {
+  @ApiProperty()
+  readonly totalValue: number;
+
+  @ApiProperty()
+  readonly commission: number;
+
+  @ApiProperty()
+  readonly avgValue: number;
+
+  @ApiProperty()
+  readonly avgCommission: number;
+
+  @ApiProperty()
+  readonly count: number;
+
+  @ApiProperty()
+  readonly date: Date;
+
+  constructor(totalValue: number, count: number, day: Date) {
+    this.totalValue = totalValue;
+    this.commission = totalValue * 0.06;
+    this.count = count;
+    this.avgCommission = this.commission / this.count;
+    this.avgValue = this.totalValue / this.count;
+    this.date = day;
+  }
+}

@@ -18,8 +18,10 @@ export class UserInfoService {
   /**
    * Find single userInfo
    */
-  async findOne(id: string): Promise<UserInfoEntity> {
-    const userInfo = await this._userInfoRepository.findOne(id);
+  async findOne(
+    options: FindConditions<UserInfoEntity>,
+  ): Promise<UserInfoEntity> {
+    const userInfo = await this._userInfoRepository.findOne(options);
     if (!userInfo) {
       throw new NotFoundException();
     }
@@ -81,7 +83,7 @@ export class UserInfoService {
   }
 
   async deleteUserInfo(id: string): Promise<UserInfoDto> {
-    const found = await this.findOne(id);
+    const found = await this.findOne({ id });
     const userInfo = await this._userInfoRepository.delete(id);
     if (userInfo.affected === 0) {
       throw new NotFoundException();
@@ -118,6 +120,6 @@ export class UserInfoService {
     if (updated.affected === 0) {
       throw new NotFoundException();
     }
-    return (await this.findOne(id)).toDto();
+    return (await this.findOne({ id })).toDto();
   }
 }

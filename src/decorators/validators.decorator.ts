@@ -65,13 +65,13 @@ export function IsCellNumber(
   return (object: any, propertyName: string) => {
     registerDecorator({
       propertyName,
-      name: 'isMelliCode',
+      name: 'isCellNumber',
       target: object.constructor,
       constraints: [],
       options: validationOptions,
       validator: {
         validate(value: string, _args: ValidationArguments) {
-          return /^9[0|1|2|3][0-9]{8}$/.test(value);
+          return /^9[0-9][0-9]{8}$/.test(value);
         },
       },
     });

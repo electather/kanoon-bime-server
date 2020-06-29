@@ -1,6 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 import { PageOptionsDto } from '../../../common/dto/PageOptionsDto';
 
@@ -10,26 +9,22 @@ export class ThirdPartyPageOptionsDto extends PageOptionsDto {
   @ApiPropertyOptional()
   readonly bimeNumber?: string;
 
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
   @IsOptional()
   @ApiPropertyOptional()
   readonly creationDateMin?: string;
 
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
   @IsOptional()
   @ApiPropertyOptional()
   readonly creationDateMax?: string;
 
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
   @IsOptional()
   @ApiPropertyOptional()
   readonly expiryDateMin?: string;
 
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
   @IsOptional()
   @ApiPropertyOptional()
   readonly expiryDateMax?: string;

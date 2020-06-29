@@ -61,7 +61,6 @@ export class UserService {
     const user = await this._userRepository.save(
       this._userRepository.create(create),
     );
-
     await this._userInfoService.createUserInfo({
       melliCode,
       address,
@@ -134,15 +133,15 @@ export class UserService {
     pageOptionsDto: UsersPageOptionsDto,
   ): Promise<UsersPageDto> {
     const qb = this._userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.info', 'info')
-      .leftJoinAndSelect('user.avatar', 'avatar')
-      .where('user.role = :role', { role: RoleType.BIME_GOZAR });
+      .createQueryBuilder('users')
+      .leftJoinAndSelect('users.info', 'info')
+      .leftJoinAndSelect('users.avatar', 'avatar')
+      .where('users.role = :role', { role: RoleType.BIME_GOZAR });
     if (pageOptionsDto.q) {
-      qb.orWhere('user.first_name LIKE :firstName', {
+      qb.orWhere('users.first_name LIKE :firstName', {
         firstName: pageOptionsDto.q,
       });
-      qb.orWhere('user.last_name LIKE :lastName', {
+      qb.orWhere('users.last_name LIKE :lastName', {
         lastName: pageOptionsDto.q,
       });
     }
@@ -151,6 +150,7 @@ export class UserService {
         melliCode: '%' + pageOptionsDto.melliCode + '%',
       });
     }
+    qb.orderBy('users.created_at', pageOptionsDto.order);
 
     const [users, usersCount] = await qb.getManyAndCount();
     const pageMetaDto = new PageMetaDto({
