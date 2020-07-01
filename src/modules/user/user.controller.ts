@@ -68,7 +68,17 @@ export class UserController {
     return (
       await this._userService.findOne(
         { id },
-        { relations: ['info', 'avatar', 'vehicles', 'tpi', 'bi'] },
+        {
+          relations: [
+            'info',
+            'avatar',
+            'vehicles',
+            'tpi',
+            'tpi.vehicle',
+            'bi',
+            'bi.vehicle',
+          ],
+        },
       )
     )?.toDto();
   }
