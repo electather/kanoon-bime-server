@@ -66,7 +66,10 @@ export class UserController {
     id: string,
   ): Promise<UserDto> {
     return (
-      await this._userService.findOne({ id }, { relations: ['info', 'avatar'] })
+      await this._userService.findOne(
+        { id },
+        { relations: ['info', 'avatar', 'vehicles', 'tpi', 'bi'] },
+      )
     )?.toDto();
   }
 

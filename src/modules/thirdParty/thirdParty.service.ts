@@ -181,20 +181,34 @@ export class ThirdPartyService {
   }
 
   async getDailyStats(options: ThirdPartyStatOptionsDto, user: UserEntity) {
+    console.log(options);
     const qb = this._thirdPartyRepository
       .createQueryBuilder('tpi')
       .select('SUM(tpi.full_amount)', 'totalValue')
       .addSelect('COUNT(*)', 'count')
       .addSelect('tpi.start_date::date', 'day')
       .groupBy('tpi.start_date::date')
-      .orderBy('tpi.start_date::date');
+      .orderBy('tpi.start_date::date')
+      .where('tpi.full_amount > :min', {
+        min: 0,
+      });
     if (user.role !== RoleType.ADMIN) {
-      qb.where('tpi.creator_id = :id', {
+      qb.andWhere('tpi.creator_id = :id', {
         id: user.id,
       });
     } else if (options.userId) {
-      qb.where('tpi.creator_id = :id', {
+      qb.andWhere('tpi.creator_id = :id', {
         id: options.userId,
+      });
+    }
+    if (options.startDateMin) {
+      qb.andWhere('tpi.start_date >= :date', {
+        date: options.startDateMin,
+      });
+    }
+    if (options.startDateMax) {
+      qb.andWhere('tpi.start_date <= :date', {
+        date: options.startDateMin,
       });
     }
     const rawResult = await qb.getRawMany();
@@ -205,16 +219,28 @@ export class ThirdPartyService {
     const qb = this._thirdPartyRepository
       .createQueryBuilder('tpi')
       .select('SUM(tpi.full_amount)', 'totalValue')
-      .addSelect('COUNT(*)', 'count');
+      .addSelect('COUNT(*)', 'count')
+      .where('tpi.full_amount > 0');
     if (user.role !== RoleType.ADMIN) {
-      qb.where('tpi.creator_id = :id', {
+      qb.andWhere('tpi.creator_id = :id', {
         id: user.id,
       });
     } else if (options.userId) {
-      qb.where('tpi.creator_id = :id', {
+      qb.andWhere('tpi.creator_id = :id', {
         id: options.userId,
       });
     }
+    if (options.startDateMin) {
+      qb.andWhere('tpi.start_date >= :date', {
+        date: options.startDateMin,
+      });
+    }
+    if (options.startDateMax) {
+      qb.andWhere('tpi.start_date <= :date', {
+        date: options.startDateMin,
+      });
+    }
+
     const { totalValue, count } = await qb.getRawOne();
     return new ThirdPartyTotalStatDto(
       Number(totalValue),

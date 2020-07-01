@@ -29,7 +29,7 @@ export class ThirdPartyTotalStatDto {
     endDate?: Date,
   ) {
     this.totalValue = totalValue;
-    this.commission = totalValue * 0.06;
+    this.commission = totalValue * 0.03;
     this.count = count;
     this.avgCommission = this.commission / this.count;
     this.avgValue = this.totalValue / this.count;

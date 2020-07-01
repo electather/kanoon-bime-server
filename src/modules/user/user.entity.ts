@@ -9,7 +9,9 @@ import {
 
 import { AbstractEntity } from '../../common/abstract.entity';
 import { RoleType } from '../../common/constants/role-type';
+import { BodyInsuranceEntity } from '../bodyInsurance/bodyInsurance.entity';
 import { FileEntity } from '../files/file.entity';
+import { ThirdPartyEntity } from '../thirdParty/thirdParty.entity';
 import { UserInfoEntity } from '../userInfo/userInfo.entity';
 import { VehicleEntity } from '../vehicle/vehicle.entity';
 import { UserDto } from './dto/UserDto';
@@ -36,7 +38,7 @@ export class UserEntity extends AbstractEntity<UserDto> {
   avatar?: FileEntity;
 
   @OneToMany(() => VehicleEntity, (item) => item.insurer)
-  vehicles: VehicleEntity[];
+  vehicles?: VehicleEntity[];
 
   @OneToOne(() => UserInfoEntity, (info) => info.user, {
     nullable: true,
@@ -47,6 +49,12 @@ export class UserEntity extends AbstractEntity<UserDto> {
 
   @ManyToOne(() => UserEntity, { nullable: true, cascade: true })
   creator?: UserEntity;
+
+  @OneToMany(() => ThirdPartyEntity, (item) => item.insurer)
+  tpi?: ThirdPartyEntity[];
+
+  @OneToMany(() => BodyInsuranceEntity, (item) => item.insurer)
+  bi?: BodyInsuranceEntity[];
 
   dtoClass = UserDto;
 }
