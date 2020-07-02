@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
 import { DeepPartial, FindConditions, FindOneOptions, Like } from 'typeorm';
 
@@ -88,7 +92,14 @@ export class UserService {
     if (creator) {
       create.creator = { id: creator.id };
     }
+    const melliCodeRegistered = this._userInfoService.findOne(
+      { melliCode },
+      true,
+    );
 
+    if (melliCodeRegistered) {
+      new ConflictException('error.unique.melliCode');
+    }
     const user = await this._userRepository.save(
       this._userRepository.create(create),
     );
@@ -164,18 +175,16 @@ export class UserService {
   async updateUser(
     id: string,
     userUpdateDto: UserUpdateDto,
-    editor?: UserEntity,
+    editor: UserEntity,
   ): Promise<UserDto> {
-    const found = await this.findOne(
-      { id },
-      {
-        relations: ['creator'],
-      },
-    );
-    if (found.creator?.id && found.creator?.id !== editor?.id) {
+    const found = await this.findOne({ id });
+    if (
+      editor.role !== RoleType.ADMIN &&
+      found.creatorId &&
+      found.creatorId !== editor?.id
+    ) {
       throw new UnauthorizedException('you are not the creator!');
     }
-
     const update: DeepPartial<UserEntity> = {
       ...userUpdateDto,
       creator: { id: editor?.id },
@@ -186,6 +195,19 @@ export class UserService {
       delete (<any>update).avatarId;
     }
     await this._userRepository.update(id, pickBy(update, identity));
+    return found.toDto();
+  }
+
+  async deleteUser(id: string, editor: UserEntity): Promise<UserDto> {
+    const found = await this.findOne({ id });
+    if (
+      editor.role !== RoleType.ADMIN &&
+      found.creatorId &&
+      found.creatorId !== editor?.id
+    ) {
+      throw new UnauthorizedException('you are not the creator!');
+    }
+    await this._userRepository.delete(id);
     return found.toDto();
   }
 }

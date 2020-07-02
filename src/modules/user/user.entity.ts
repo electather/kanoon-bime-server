@@ -50,6 +50,9 @@ export class UserEntity extends AbstractEntity<UserDto> {
   @ManyToOne(() => UserEntity, { nullable: true, cascade: true })
   creator?: UserEntity;
 
+  @Column({ nullable: true })
+  creatorId?: string;
+
   @OneToMany(() => ThirdPartyEntity, (item) => item.insurer)
   tpi?: ThirdPartyEntity[];
 

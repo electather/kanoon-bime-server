@@ -20,9 +20,10 @@ export class UserInfoService {
    */
   async findOne(
     options: FindConditions<UserInfoEntity>,
-  ): Promise<UserInfoEntity> {
+    disableException?: boolean,
+  ): Promise<UserInfoEntity | undefined> {
     const userInfo = await this._userInfoRepository.findOne(options);
-    if (!userInfo) {
+    if (!disableException && !userInfo) {
       throw new NotFoundException();
     }
     return userInfo;
@@ -82,19 +83,19 @@ export class UserInfoService {
     return this._userInfoRepository.save(userInfo);
   }
 
-  async deleteUserInfo(id: string): Promise<UserInfoDto> {
+  async deleteUserInfo(id: string): Promise<UserInfoDto | undefined> {
     const found = await this.findOne({ id });
     const userInfo = await this._userInfoRepository.delete(id);
     if (userInfo.affected === 0) {
       throw new NotFoundException();
     }
-    return found.toDto();
+    return found?.toDto();
   }
 
   async updateUserInfo(
     id: string,
     userInfoUpdateDto: UserInfoUpdateDto,
-  ): Promise<UserInfoDto> {
+  ): Promise<UserInfoDto | undefined> {
     const update: DeepPartial<UserInfoEntity> = {
       ...userInfoUpdateDto,
     };
@@ -120,6 +121,6 @@ export class UserInfoService {
     if (updated.affected === 0) {
       throw new NotFoundException();
     }
-    return (await this.findOne({ id })).toDto();
+    return (await this.findOne({ id }))?.toDto();
   }
 }

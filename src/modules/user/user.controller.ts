@@ -3,6 +3,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -108,8 +109,9 @@ export class UserController {
   editOne(
     @AuthUser() user: UserEntity,
     @Body() updateDto: UserUpdateDto,
+    @AuthUser() editor: UserEntity,
   ): Promise<UserDto> {
-    return this._userService.updateUser(user.id, updateDto);
+    return this._userService.updateUser(user.id, updateDto, editor);
   }
 
   @Put(':id')
@@ -127,5 +129,21 @@ export class UserController {
     @AuthUser() editor: UserEntity,
   ): Promise<UserDto> {
     return this._userService.updateUser(id, updateDto, editor);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: UserDto,
+    description: 'deleted item',
+  })
+  @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
+  @UseGuards(AuthGuard, RolesGuard)
+  deleteById(
+    @Param('id', new ParseUUIDPipe({ version: '4' }))
+    id: string,
+    @AuthUser() editor: UserEntity,
+  ): Promise<UserDto> {
+    return this._userService.deleteUser(id, editor);
   }
 }
