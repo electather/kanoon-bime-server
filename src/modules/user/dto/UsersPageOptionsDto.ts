@@ -9,4 +9,10 @@ export class UsersPageOptionsDto extends PageOptionsDto {
   @IsNotEmpty()
   @IsOptional()
   readonly melliCode?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  readonly phone?: string;
 }

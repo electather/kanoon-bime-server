@@ -78,6 +78,7 @@ export class UserController {
             'tpi.vehicle',
             'bi',
             'bi.vehicle',
+            'creator',
           ],
         },
       )

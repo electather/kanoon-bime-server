@@ -161,6 +161,11 @@ export class UserService {
         melliCode: '%' + pageOptionsDto.melliCode + '%',
       });
     }
+    if (pageOptionsDto.phone) {
+      qb.andWhere('users.phone LIKE :phone', {
+        phone: '%' + pageOptionsDto.phone + '%',
+      });
+    }
     qb.orderBy('users.created_at', pageOptionsDto.order);
 
     const [users, usersCount] = await qb.getManyAndCount();
