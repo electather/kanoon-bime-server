@@ -1,7 +1,6 @@
 'use strict';
 
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,7 +8,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -20,11 +18,13 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
+import { GetOneOptions } from '../../common/dto/GetOneOptions';
 import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { RolesGuard } from '../../guards/roles.guard';
 import { AuthUserInterceptor } from '../../interceptors/auth-user-interceptor.service';
+import { ParseUUIDPipeV4 } from '../../pipes/parse-uuid-v4.pipe';
 import { UserCreateDTO } from './dto/UserCreateDto';
 import { UserDto } from './dto/UserDto';
 import { UsersPageDto } from './dto/UsersPageDto';
@@ -64,29 +64,16 @@ export class UserController {
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @UseGuards(AuthGuard, RolesGuard)
   async findOne(
-    @Param(
-      'id',
-      new ParseUUIDPipe({
-        version: '4',
-        exceptionFactory: () => new BadRequestException('error.uuidV4'),
-      }),
-    )
+    @Param('id', new ParseUUIDPipeV4())
     id: string,
+    @Query(new ValidationPipe({ transform: true }))
+    options: GetOneOptions,
   ): Promise<UserDto> {
     return (
       await this._userService.findOne(
         { id },
         {
-          relations: [
-            'info',
-            'avatar',
-            'vehicles',
-            'tpi',
-            'tpi.vehicle',
-            'bi',
-            'bi.vehicle',
-            'creator',
-          ],
+          relations: options.fields,
         },
       )
     )?.toDto();
@@ -131,13 +118,7 @@ export class UserController {
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @UseGuards(AuthGuard, RolesGuard)
   editById(
-    @Param(
-      'id',
-      new ParseUUIDPipe({
-        version: '4',
-        exceptionFactory: () => new BadRequestException('error.uuidV4'),
-      }),
-    )
+    @Param('id', new ParseUUIDPipeV4())
     id: string,
     @Body() updateDto: UserUpdateDto,
     @AuthUser() editor: UserEntity,
@@ -154,13 +135,7 @@ export class UserController {
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @UseGuards(AuthGuard, RolesGuard)
   deleteById(
-    @Param(
-      'id',
-      new ParseUUIDPipe({
-        version: '4',
-        exceptionFactory: () => new BadRequestException('error.uuidV4'),
-      }),
-    )
+    @Param('id', new ParseUUIDPipeV4())
     id: string,
     @AuthUser() editor: UserEntity,
   ): Promise<UserDto> {

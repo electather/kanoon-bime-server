@@ -45,12 +45,6 @@ export class UserUpdateDto {
   @ApiPropertyOptional()
   readonly phone: string;
 
-  @IsString({ message: 'error.user.address.string' })
-  @IsNotEmpty({ message: 'error.user.address.empty' })
-  @IsOptional()
-  @ApiPropertyOptional()
-  readonly address?: string;
-
   @IsUUID('4', { message: 'error.user.avatarId.uuidV4' })
   @IsOptional()
   @ApiPropertyOptional()
