@@ -1,6 +1,7 @@
 'use strict';
 
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -63,7 +64,13 @@ export class UserController {
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @UseGuards(AuthGuard, RolesGuard)
   async findOne(
-    @Param('id', new ParseUUIDPipe({ version: '4' }))
+    @Param(
+      'id',
+      new ParseUUIDPipe({
+        version: '4',
+        exceptionFactory: () => new BadRequestException('error.uuidV4'),
+      }),
+    )
     id: string,
   ): Promise<UserDto> {
     return (
@@ -124,7 +131,13 @@ export class UserController {
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @UseGuards(AuthGuard, RolesGuard)
   editById(
-    @Param('id', new ParseUUIDPipe({ version: '4' }))
+    @Param(
+      'id',
+      new ParseUUIDPipe({
+        version: '4',
+        exceptionFactory: () => new BadRequestException('error.uuidV4'),
+      }),
+    )
     id: string,
     @Body() updateDto: UserUpdateDto,
     @AuthUser() editor: UserEntity,
@@ -141,7 +154,13 @@ export class UserController {
   @Roles(RoleType.ADMIN, RoleType.KARSHENAS)
   @UseGuards(AuthGuard, RolesGuard)
   deleteById(
-    @Param('id', new ParseUUIDPipe({ version: '4' }))
+    @Param(
+      'id',
+      new ParseUUIDPipe({
+        version: '4',
+        exceptionFactory: () => new BadRequestException('error.uuidV4'),
+      }),
+    )
     id: string,
     @AuthUser() editor: UserEntity,
   ): Promise<UserDto> {

@@ -61,6 +61,13 @@ export class UserService {
     }
 
     create.creator = { id: creator.id };
+    const melliCodeRegistered = await this._userInfoService.findOne(
+      { melliCode },
+      true,
+    );
+    if (melliCodeRegistered) {
+      throw new ConflictException('error.unique.melliCode');
+    }
 
     const user = await this._userRepository.save(
       this._userRepository.create(create),
@@ -92,13 +99,12 @@ export class UserService {
     if (creator) {
       create.creator = { id: creator.id };
     }
-    const melliCodeRegistered = this._userInfoService.findOne(
+    const melliCodeRegistered = await this._userInfoService.findOne(
       { melliCode },
       true,
     );
-
-    if (melliCodeRegistered) {
-      new ConflictException('error.unique.melliCode');
+    if (melliCodeRegistered?.id) {
+      throw new ConflictException('error.unique.melliCode');
     }
     const user = await this._userRepository.save(
       this._userRepository.create(create),
