@@ -26,6 +26,9 @@ export class UserDtoMinimal extends MinimalAbstractDto {
   @ApiPropertyOptional()
   phone?: string;
 
+  @ApiPropertyOptional()
+  creatorId?: string;
+
   constructor(user: UserDto) {
     super(user);
     this.firstName = user.firstName;
@@ -34,5 +37,6 @@ export class UserDtoMinimal extends MinimalAbstractDto {
     this.avatar = user.avatar;
     this.melliCode = user.info?.melliCode;
     this.phone = user.phone;
+    this.creatorId = user.creatorId;
   }
 }

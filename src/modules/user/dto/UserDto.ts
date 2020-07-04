@@ -33,6 +33,9 @@ export class UserDto extends AbstractDto {
   @ApiPropertyOptional({ type: () => UserDto })
   creator?: UserDto;
 
+  @ApiPropertyOptional()
+  creatorId?: string;
+
   @ApiPropertyOptional({ type: () => ThirdPartyDto, isArray: true })
   tpi?: ThirdPartyDto[];
 
@@ -54,5 +57,6 @@ export class UserDto extends AbstractDto {
     this.bi = user.bi?.toDtos();
     this.vehicles = user.vehicles?.toDtos();
     this.creator = user.creator?.toDto();
+    this.creatorId = user.creatorId;
   }
 }
