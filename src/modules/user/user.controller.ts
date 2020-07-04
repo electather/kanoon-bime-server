@@ -19,6 +19,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
 import { GetOneOptions } from '../../common/dto/GetOneOptions';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -140,5 +141,16 @@ export class UserController {
     @AuthUser() editor: UserEntity,
   ): Promise<UserDto> {
     return this._userService.deleteUser(id, editor);
+  }
+
+  @Put('change-ownership')
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleType.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  changeOwnership(
+    @Query(new ValidationPipe({ transform: true }))
+    dto: OwnerShipChangeDto,
+  ) {
+    return this._userService.changeOwnership(dto);
   }
 }

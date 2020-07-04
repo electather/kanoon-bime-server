@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -149,5 +150,16 @@ export class ThirdPartyController {
     @AuthUser() creator: UserEntity,
   ): Promise<ThirdPartyDto> {
     return this._thirdPartyService.deleteThirdParty(id, creator);
+  }
+
+  @Put('change-ownership')
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleType.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  changeOwnership(
+    @Query(new ValidationPipe({ transform: true }))
+    dto: OwnerShipChangeDto,
+  ) {
+    return this._thirdPartyService.changeOwnership(dto);
   }
 }

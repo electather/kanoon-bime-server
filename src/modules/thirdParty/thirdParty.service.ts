@@ -15,6 +15,7 @@ import {
 } from 'typeorm';
 
 import { RoleType } from '../../common/constants/role-type';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserEntity } from '../user/user.entity';
 import { ThirdPartyCreateDto } from './dto/ThirdPartyCreateDto';
@@ -181,7 +182,6 @@ export class ThirdPartyService {
   }
 
   async getDailyStats(options: ThirdPartyStatOptionsDto, user: UserEntity) {
-    console.log(options);
     const qb = this._thirdPartyRepository
       .createQueryBuilder('tpi')
       .select('SUM(tpi.full_amount)', 'totalValue')
@@ -248,5 +248,15 @@ export class ThirdPartyService {
       options.startDateMin,
       options.startDateMax,
     );
+  }
+
+  async changeOwnership({ nextOwner, pervOwner }: OwnerShipChangeDto) {
+    const res = await this._thirdPartyRepository.update(
+      { creatorId: Equal(pervOwner) },
+      { creator: { id: nextOwner } },
+    );
+    return {
+      effected: res.affected ?? 0,
+    };
   }
 }

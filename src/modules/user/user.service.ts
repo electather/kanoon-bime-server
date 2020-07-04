@@ -4,9 +4,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
-import { DeepPartial, FindConditions, FindOneOptions, Like } from 'typeorm';
+import {
+  DeepPartial,
+  Equal,
+  FindConditions,
+  FindOneOptions,
+  Like,
+} from 'typeorm';
 
 import { RoleType } from '../../common/constants/role-type';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
@@ -220,5 +227,15 @@ export class UserService {
     }
     await this._userRepository.delete(id);
     return found.toDto();
+  }
+
+  async changeOwnership({ nextOwner, pervOwner }: OwnerShipChangeDto) {
+    const res = await this._userRepository.update(
+      { creatorId: Equal(pervOwner) },
+      { creator: { id: nextOwner } },
+    );
+    return {
+      effected: res.affected ?? 0,
+    };
   }
 }
