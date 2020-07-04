@@ -160,6 +160,8 @@ export class UserService {
       .createQueryBuilder('users')
       .leftJoinAndSelect('users.info', 'info')
       .leftJoinAndSelect('users.avatar', 'avatar')
+      .take(pageOptionsDto.take)
+      .skip(pageOptionsDto.skip)
       .where('users.role = :role', { role: RoleType.BIME_GOZAR });
     if (pageOptionsDto.q) {
       qb.orWhere('users.first_name LIKE :firstName', {
