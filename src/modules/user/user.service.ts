@@ -129,14 +129,23 @@ export class UserService {
    * @memberof UserService
    */
   async getUsers(pageOptionsDto: UsersPageOptionsDto): Promise<UsersPageDto> {
-    const where: FindConditions<UserEntity> = {};
+    const where: FindConditions<UserEntity>[] = [];
     if (pageOptionsDto.q) {
-      where.lastName = Like(`%${pageOptionsDto.q}%`);
+      where.push(
+        { firstName: Like(`%${pageOptionsDto.q}%`) },
+        { lastName: Like(`%${pageOptionsDto.q}%`) },
+      );
     }
     if (pageOptionsDto.melliCode) {
-      where.info = { melliCode: Like(`%${pageOptionsDto.melliCode}%`) };
+      where.push({
+        info: { melliCode: Like(`%${pageOptionsDto.melliCode}%`) },
+      });
     }
-
+    if (pageOptionsDto.phone) {
+      where.push({
+        phone: Like(`%${pageOptionsDto.melliCode}%`),
+      });
+    }
     const [users, usersCount] = await this._userRepository.findAndCount({
       where,
       take: pageOptionsDto.take,
@@ -181,8 +190,6 @@ export class UserService {
         phone: '%' + pageOptionsDto.phone + '%',
       });
     }
-    qb.orderBy('users.created_at', pageOptionsDto.order);
-
     const [users, usersCount] = await qb.getManyAndCount();
     const pageMetaDto = new PageMetaDto({
       pageOptionsDto,
