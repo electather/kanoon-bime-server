@@ -13,6 +13,15 @@ export class VehicleDto extends AbstractDto {
   insurer: UserDto;
 
   @ApiPropertyOptional()
+  insurerId?: string;
+
+  @ApiPropertyOptional({ type: () => UserDto })
+  creator?: UserDto;
+
+  @ApiPropertyOptional()
+  creatorId?: string;
+
+  @ApiPropertyOptional()
   ownerName: string;
 
   @ApiPropertyOptional()
@@ -54,5 +63,8 @@ export class VehicleDto extends AbstractDto {
     this.plateLetter = vehicle.plateLetter;
     this.plateLastThreeNumbers = vehicle.plateLastThreeNumbers;
     this.plateIRNumber = vehicle.plateIRNumber;
+    this.insurerId = vehicle.insurerId;
+    this.creator = vehicle.creator?.toDto();
+    this.creatorId = vehicle.creatorId;
   }
 }
