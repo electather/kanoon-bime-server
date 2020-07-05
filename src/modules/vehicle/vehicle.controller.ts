@@ -25,6 +25,7 @@ import {
 
 import { RoleType } from '../../common/constants/role-type';
 import { GetOneOptions } from '../../common/dto/GetOneOptions';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -150,5 +151,16 @@ export class VehicleController {
     @AuthUser() editor: UserEntity,
   ): Promise<VehicleDto> {
     return this._vehicleService.deleteVehicle(id, editor);
+  }
+
+  @Put('change-ownership')
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleType.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  changeOwnership(
+    @Query(new ValidationPipe({ transform: true }))
+    dto: OwnerShipChangeDto,
+  ) {
+    return this._vehicleService.changeOwnership(dto);
   }
 }

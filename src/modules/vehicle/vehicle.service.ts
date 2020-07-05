@@ -4,9 +4,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { identity, pickBy } from 'lodash';
-import { DeepPartial, FindConditions, FindOneOptions, Like } from 'typeorm';
+import {
+  DeepPartial,
+  Equal,
+  FindConditions,
+  FindOneOptions,
+  Like,
+} from 'typeorm';
 
 import { RoleType } from '../../common/constants/role-type';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserEntity } from '../user/user.entity';
 import { VehicleCreateDto } from './dto/VehicleCreateDto';
@@ -123,5 +130,15 @@ export class VehicleService {
       throw new NotFoundException();
     }
     return (await this.findOne({ id })).toDto();
+  }
+
+  async changeOwnership({ nextOwner, pervOwner }: OwnerShipChangeDto) {
+    const res = await this._vehicleRepository.update(
+      { creatorId: Equal(pervOwner) },
+      { creator: { id: nextOwner } },
+    );
+    return {
+      effected: res.affected ?? 0,
+    };
   }
 }

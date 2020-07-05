@@ -15,6 +15,7 @@ import {
 } from 'typeorm';
 
 import { RoleType } from '../../common/constants/role-type';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { UserEntity } from '../user/user.entity';
 import { BodyInsuranceEntity } from './bodyInsurance.entity';
@@ -221,5 +222,15 @@ export class BodyInsuranceService {
       options.startDateMin,
       options.startDateMax,
     );
+  }
+
+  async changeOwnership({ nextOwner, pervOwner }: OwnerShipChangeDto) {
+    const res = await this._bodyInsuranceRepository.update(
+      { creatorId: Equal(pervOwner) },
+      { creator: { id: nextOwner } },
+    );
+    return {
+      effected: res.affected ?? 0,
+    };
   }
 }

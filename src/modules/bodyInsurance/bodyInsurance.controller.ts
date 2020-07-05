@@ -22,6 +22,7 @@ import {
 } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
+import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
@@ -144,5 +145,16 @@ export class BodyInsuranceController {
     @AuthUser() creator: UserEntity,
   ): Promise<BodyInsuranceDto> {
     return this._bodyInsuranceService.deleteBodyInsurance(id, creator);
+  }
+
+  @Put('change-ownership')
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleType.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  changeOwnership(
+    @Query(new ValidationPipe({ transform: true }))
+    dto: OwnerShipChangeDto,
+  ) {
+    return this._bodyInsuranceService.changeOwnership(dto);
   }
 }
