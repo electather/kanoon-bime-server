@@ -4,7 +4,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 import { AbstractDto } from '../../../common/dto/AbstractDto';
-import { FileDto } from '../../../modules/files/dto/FileDto';
+import { BodyInsuranceDto } from '../../bodyInsurance/dto/BodyInsuranceDto';
+import { FileDto } from '../../files/dto/FileDto';
+import { ThirdPartyDto } from '../../thirdParty/dto/ThirdPartyDto';
 import { UserDto } from '../../user/dto/UserDto';
 import { VehicleEntity } from '../vehicle.entity';
 
@@ -51,6 +53,12 @@ export class VehicleDto extends AbstractDto {
   @ApiPropertyOptional({ type: () => FileDto })
   attachment?: FileDto;
 
+  @ApiPropertyOptional({ type: () => BodyInsuranceDto, isArray: true })
+  bodyInsurance?: BodyInsuranceDto[];
+
+  @ApiPropertyOptional({ type: () => ThirdPartyDto, isArray: true })
+  tpi?: ThirdPartyDto[];
+
   constructor(vehicle: VehicleEntity) {
     super(vehicle);
     this.insurer = vehicle.insurer?.toDto();
@@ -66,5 +74,7 @@ export class VehicleDto extends AbstractDto {
     this.insurerId = vehicle.insurerId;
     this.creator = vehicle.creator?.toDto();
     this.creatorId = vehicle.creatorId;
+    this.tpi = vehicle.tpi?.toDtos();
+    this.bodyInsurance = vehicle.bodyInsurance?.toDtos();
   }
 }
