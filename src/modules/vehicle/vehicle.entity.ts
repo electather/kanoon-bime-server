@@ -13,6 +13,9 @@ export class VehicleEntity extends AbstractEntity<VehicleDto> {
   @ManyToOne(() => UserEntity, (user) => user.vehicles, { nullable: true })
   insurer: UserEntity;
 
+  @Column({ nullable: true })
+  insurerId?: string;
+
   @Column({ nullable: false })
   ownerName: string;
 

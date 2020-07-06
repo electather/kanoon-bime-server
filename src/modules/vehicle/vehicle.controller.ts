@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 
 import { RoleType } from '../../common/constants/role-type';
+import { GetOneOptions } from '../../common/dto/GetOneOptions';
 import { OwnerShipChangeDto } from '../../common/dto/OwnerShipChangeDto';
 import { AuthUser } from '../../decorators/auth-user.decorator';
 import { Roles } from '../../decorators/roles.decorator';
@@ -57,8 +58,17 @@ export class VehicleController {
   async getOne(
     @Param('id', new ParseUUIDPipe({ version: '4' }))
     id: string,
+    @Query(new ValidationPipe({ transform: true }))
+    options: GetOneOptions,
   ): Promise<VehicleDto> {
-    return (await this._vehicleService.findOne({ id }))?.toDto();
+    return (
+      await this._vehicleService.findOne(
+        { id },
+        {
+          relations: options.fields,
+        },
+      )
+    )?.toDto();
   }
 
   @Get()
